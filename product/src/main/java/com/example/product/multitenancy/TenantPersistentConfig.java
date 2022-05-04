@@ -49,7 +49,7 @@ public class TenantPersistentConfig {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setPersistenceUnitName("tenant-persistence-unit");
 		em.setDataSource(dataSource);
-		em.setPackagesToScan("com.example.product.campaign.model");
+		em.setPackagesToScan("com.example.product.model");
 		em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		em.setJpaPropertyMap(properties);
 		return em;

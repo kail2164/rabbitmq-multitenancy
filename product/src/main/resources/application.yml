@@ -13,7 +13,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/db_product
     username: ad
     password: 12345678!Ad
-    driverClassName: org.postgresql.Driver
   jpa:
     properties:
       hibernate:
@@ -26,6 +25,7 @@ spring:
     host: host.docker.internal 
     username: ad
     password: 12345678!Ad
+    port: 5672
 springdoc:
    swagger-ui:
       path: /api/docs/swagger-ui.html

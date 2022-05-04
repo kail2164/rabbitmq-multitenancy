@@ -28,6 +28,7 @@ public class RabbitMQConfig {
 		return rabbitTemplate;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Bean
 	public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
 		ObjectMapper objectMapper = new ObjectMapper();

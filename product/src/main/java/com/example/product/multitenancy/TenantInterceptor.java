@@ -11,18 +11,22 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.common.constants.GlobalConstant;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
-import com.example.common.util.JwtUtil;
+import com.example.common.util.CommonJwtUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class TenantInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
-		String clientId = req.getHeader(GlobalConstant.X_ACCOUNT_ID);
-		if (!JwtUtil.isInWhiteList(req.getRequestURI())) {
-			if (ObjectUtils.isEmpty(clientId) || clientId.equals("0") || clientId.equals("null")) {
+		String accountId = req.getHeader(GlobalConstant.X_ACCOUNT_ID);
+		log.error("interceptor: ");
+		if (!CommonJwtUtil.isInWhiteList(req.getRequestURI())) {
+			if (ObjectUtils.isEmpty(accountId) || accountId.equals("0") || accountId.equals("null")) {
 				throw new CustomException(APIStatus.INVALID_TOKEN, "Invalid token");
 			} else {
-				TenantContext.setCurrentTenant("client" + clientId);
+				TenantContext.setCurrentTenant("account" + accountId);
 			}
 		}
 		return true;

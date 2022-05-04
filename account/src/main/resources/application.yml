@@ -24,9 +24,8 @@ spring:
   rabbitmq:
     host: host.docker.internal 
     username: ad
-    password: 12345678!Ad 
+    password: 12345678!Ad
+    port: 5672
 springdoc:
    swagger-ui:
       path: /api/docs/swagger-ui.html
-jwt:
-  secret: 123456

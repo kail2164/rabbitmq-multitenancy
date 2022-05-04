@@ -1,5 +1,10 @@
 package com.example.product.consumer;
 
-public class ProductConsumer {
+import com.example.common.rabbitmq.Consumer;
+
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public class ProductConsumer implements Consumer{
 
 }

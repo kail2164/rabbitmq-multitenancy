@@ -20,12 +20,14 @@ public interface RabbitMQConstant {
 	String LOGOUT = "logout";
 	String TOKEN = "token";
 	String VALIDATE = "validate";
+	
 	String FANOUT_SCHEMA = StringUtil.getExchange(SCHEMA, FANOUT);
 	
 	String TOPIC_ACCOUNT = StringUtil.getExchange(ACCOUNT, TOPIC);
 	
-	String QUEUE_ACOUNT_LOGOUT = StringUtil.getQueueName(ACCOUNT, LOGOUT);
-	String QUEUE_ACOUNT_VALIDATE_TOKEN = StringUtil.getQueueName(ACCOUNT, VALIDATE, TOKEN);
+	String QUEUE_ACCOUNT_GET_ALL_SCHEMAS = StringUtil.getQueueName(ACCOUNT, GET, ALL, SCHEMAS);
+	String QUEUE_ACCOUNT_LOGOUT = StringUtil.getQueueName(ACCOUNT, LOGOUT);
+	String QUEUE_ACCOUNT_VALIDATE_TOKEN = StringUtil.getQueueName(ACCOUNT, VALIDATE, TOKEN);
 
 	String ACTION_ACCOUNT_GET_ALL_SCHEMAS = StringUtil.getAction(ACCOUNT, GET, ALL, SCHEMAS);
 	String ACTION_ACCOUNT_LOGOUT = StringUtil.getAction(ACCOUNT, LOGOUT);

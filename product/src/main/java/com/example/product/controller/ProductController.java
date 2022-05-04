@@ -16,6 +16,7 @@ import com.example.common.dto.response.ProductResponse;
 import com.example.common.dto.swagger.document.product.ListProductDocument;
 import com.example.common.dto.swagger.document.response.ResponseError400;
 import com.example.common.dto.swagger.document.response.ResponseError500;
+import com.example.product.publisher.AccountPublisher;
 import com.example.product.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 public class ProductController implements SecuredController {
 	@Autowired
 	ProductService productService;
+	@Autowired
+	AccountPublisher test;
 
 	@GetMapping()
 	@Operation(description = "Get products ")
@@ -42,6 +45,7 @@ public class ProductController implements SecuredController {
 //			@Parameter(allowEmptyValue = false, description = "Page number, starts from 1", example = "1") @RequestParam(required = true) int page,
 //			@Parameter(allowEmptyValue = false, description = "Records per page", example = "20") @RequestParam(required = true) int maxRecords))
 	public ResponseEntity<?> getProducts(HttpServletRequest request) throws Exception {
+		test.fetchAllSchemas();
 		return ResponseHelper.setSuccessResult(new APIResponse<List<ProductResponse>>(
 				productService.getProducts()), request.getMethod());
 	}

@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @SpringBootApplication
 @Import(CommonApplication.class)
-@OpenAPIDefinition(info = @Info(title = "Product module APIs", description = "APIs used in Product module"), servers = @Server(url = "/"))
+@OpenAPIDefinition(info = @Info(title = "Product module APIs", description = "APIs used in Product module"))
 public class ProductApplication {
 
 	public static void main(String[] args) {

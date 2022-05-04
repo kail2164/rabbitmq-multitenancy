@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -29,6 +30,7 @@ import com.example.common.util.CommonJwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 
+@Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 		@Autowired
 		private CommonJwtUtil jwtUtil;
@@ -53,7 +55,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 							new CustomException(APIStatus.UNAUTHORIZED, "Missing Authorization header"));
 					return;
 				}		
-				final String token = this.getAuthHeader(request);
+				String token = this.getAuthHeader(request);
+				if (token != null && token.startsWith("Bearer ")) {
+					token = token.substring(7);
+				}
+
 				if (jwtUtil.isInvalid(token)) {
 					sharedRabbitTemplate.convertSendAndReceive(
 							RabbitMQConstant.TOPIC_ACCOUNT, RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT, token);

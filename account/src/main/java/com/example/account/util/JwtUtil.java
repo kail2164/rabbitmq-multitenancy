@@ -27,9 +27,7 @@ public class JwtUtil implements Serializable {
 	public static final long JWT_TOKEN_VALIDITY = 12 * 60 * 60;
 
 	public static final long RESET_PASSWORD_TIMEOUT = 24 * 60 * 60;
-
-	@Value("${jwt.secret}")
-	private String secret;
+	private String secret = "12345678@Ab!";
 
 	// retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
@@ -70,7 +68,7 @@ public class JwtUtil implements Serializable {
 	// generate token for user
 	public String generateToken(UserDetails userDetails, Long id) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put(GlobalConstant.X_ACCOUNT_ID, id);		
+		claims.put(GlobalConstant.ACCOUNT_ID_STRING, id);		
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 

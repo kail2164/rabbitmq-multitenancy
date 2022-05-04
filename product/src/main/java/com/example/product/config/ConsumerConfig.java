@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.common.constants.RabbitMQConstant;
+import com.example.common.rabbitmq.Consumer;
+import com.example.product.consumer.ProductConsumer;
 
 @Configuration
 public class ConsumerConfig {
@@ -35,5 +37,10 @@ public class ConsumerConfig {
 	@Bean 
 	public Binding bindingGetProductByAccountId() {
 		return BindingBuilder.bind(queueGetProductByAccountId()).to(topic()).with(RabbitMQConstant.ROUTING_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
+	}
+	
+	@Bean
+	public Consumer productConsumer() {
+		return new ProductConsumer();
 	}
 }
