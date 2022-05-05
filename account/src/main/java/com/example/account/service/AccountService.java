@@ -8,7 +8,7 @@ import com.example.common.dto.CustomException;
 
 public interface AccountService {
 	Account create(Account acc) throws CustomException;
-	Account update(long id, Account acc) throws CustomException;
+	Account update(long id, Account acc, boolean nullableUpdate) throws CustomException;
 	Account find(String username) throws UsernameNotFoundException ;
 	void delete(long id) throws CustomException;	
 }

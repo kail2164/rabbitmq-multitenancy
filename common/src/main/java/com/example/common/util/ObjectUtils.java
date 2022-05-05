@@ -42,6 +42,7 @@ public class ObjectUtils {
 		try {
 			Object unproxied = Hibernate.unproxy(obj);
 			Field field = unproxied.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
 			return field.get(obj);
 		} catch (Exception e) {
 			log.error("Error in getFieldValue: ", e);

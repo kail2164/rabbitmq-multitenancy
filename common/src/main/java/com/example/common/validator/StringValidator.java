@@ -12,13 +12,13 @@ public class StringValidator {
 	}
 
 	public static void validateMinLength(String field, int min, String err) throws CustomException {
-		if (field.length() < min) {
+		if (field != null && field.length() < min) {
 			throw new CustomException(APIStatus.BAD_REQUEST, err);
 		}
 	}
 
 	public static void validateMaxLength(String field, int max, String err) throws CustomException {
-		if (field.length() > max) {
+		if (field != null &&field.length() > max) {
 			throw new CustomException(APIStatus.BAD_REQUEST, err);
 		}
 	}

@@ -2,7 +2,7 @@ package com.example.account.service.impl;
 
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +16,7 @@ import com.example.account.validator.AccountValidator;
 import com.example.account.validator.PasswordValidator;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
+import com.example.common.util.ObjectUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,17 +44,16 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account update(long id, Account acc) throws CustomException {
-		AccountValidator.validateAccount(acc);		
-		String password = acc.getPassword();
-		PasswordValidator.validatePassword(password);
+	@Transactional(rollbackOn = Exception.class)
+	public Account update(long id, Account acc, boolean nullableUpdate) throws CustomException {
+		AccountValidator.validateAccount(acc);				
 		try {
 			Optional<Account> optAccount = accountRepository.findById(id);
 			if(optAccount.isEmpty()) {
 				throw new CustomException(APIStatus.NOT_FOUND, "Not found account by id: " + id);
 			}
 			Account accountInDB = optAccount.get();
-			accountInDB = updateNewInfo(accountInDB, acc);
+			accountInDB = updateNewInfo(accountInDB, acc, nullableUpdate);
 			Account updatedAccount = accountRepository.save(accountInDB);
 			updatedAccount.setPassword(null);
 			return updatedAccount;
@@ -84,10 +84,9 @@ public class AccountServiceImpl implements AccountService {
 		return account;
 	}
 	
-	private Account updateNewInfo(Account oldAccount, Account newAccount) {
-		oldAccount.setPassword(passwordEncoder.encode(newAccount.getPassword()));
-		oldAccount.setFirstName(newAccount.getFirstName());
-		oldAccount.setLastName(newAccount.getLastName());
+	private Account updateNewInfo(Account oldAccount, Account newAccount, boolean nullableUpdate) throws CustomException{
+		ObjectUtils.setFieldValue(newAccount, oldAccount, "firstName", nullableUpdate);
+		ObjectUtils.setFieldValue(newAccount, oldAccount, "lastName", nullableUpdate);
 		return oldAccount;
 	}
 
