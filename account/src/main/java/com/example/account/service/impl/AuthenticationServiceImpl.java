@@ -45,25 +45,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private AccountService accountService;
 	private SessionService sessionService;
 	private AccountRepository accountRepository;
-	private UserSessionRepository userSessionRepository;
 	private AuthenticationManager authenticationManager;
 	private SchemaPublisher schemaPublisher;
-	private JwtUtils jwtUtil;
-	
+
 	@Autowired
 	public AuthenticationServiceImpl(AccountService accountService, SessionService sessionService,
-			AccountRepository accountRepository, UserSessionRepository userSessionRepository,
-			@Lazy AuthenticationManager authenticationManager, SchemaPublisher schemaPublisher, JwtUtils jwtUtil) {
+			AccountRepository accountRepository, @Lazy AuthenticationManager authenticationManager,
+			SchemaPublisher schemaPublisher) {
 		super();
 		this.accountService = accountService;
 		this.sessionService = sessionService;
 		this.accountRepository = accountRepository;
-		this.userSessionRepository = userSessionRepository;
 		this.authenticationManager = authenticationManager;
 		this.schemaPublisher = schemaPublisher;
-		this.jwtUtil = jwtUtil;
 	}
-	
+
 	@Override
 	public LoginResponse login(LoginRequest request) throws CustomException {
 		Account account = accountRepository.findByUsernameIgnoreCase(request.getUsername())
@@ -81,19 +77,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				throw new CustomException(APIStatus.BAD_REQUEST, "Username or password is not correct!");
 			}
 		}
-		String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()), account.getId());
+		String token = JwtUtils.generateToken(loadUserByUsername(request.getUsername()), account.getId());
 		setSession(token, account);
 		return AccountConverter.convertToLoginResponse(account, token);
 	}
-
-	
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
 	public RegisterResponse register(RegisterRequest request) throws CustomException {
 		Account account = AccountConverter.convertFromRegisterRequest(request);
 		account = accountService.create(account);
-		String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()), account.getId());
+		String token = JwtUtils.generateToken(loadUserByUsername(request.getUsername()), account.getId());
 		setSession(token, account);
 		schemaPublisher.createNewSchema("account" + account.getId());
 		return AccountConverter.convertToRegisterResponse(account, token);
@@ -117,10 +111,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		UserSession session = new UserSession();
 		session.setToken(token);
 		session.setAccount(acc);
-		session.setExpireAt(jwtUtil.getExpirationDateFromToken(token));
+		session.setExpireAt(JwtUtils.getExpirationDateFromToken(token));
 		// Delete old token if exist
 		sessionService.removeOldTokens(session);
-		userSessionRepository.save(session); // save session to DB
 		sessionService.setSession(token, session); // Save session into RAM
 	}
 

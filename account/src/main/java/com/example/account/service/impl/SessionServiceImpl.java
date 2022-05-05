@@ -30,6 +30,7 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public void setSession(String token, UserSession session) {
 		cacheHashMap.put(token, session);
+		userSessionRepository.save(session);
 	}
 
 	@Override

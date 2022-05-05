@@ -40,19 +40,17 @@ import lombok.NoArgsConstructor;
 @Component
 @NoArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-	private JwtUtils jwtUtil;	
 	private HandlerExceptionResolver resolver;
 
 	@Autowired
-	public JwtRequestFilter(JwtUtils jwtUtil,@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+	public JwtRequestFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
 		super();
-		this.jwtUtil = jwtUtil;
 		this.resolver = resolver;
 	}
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return jwtUtil.isInWhiteList(request.getRequestURI()) || !jwtUtil.isNotContainAccountIdHeader(request);
+		return JwtUtils.isInWhiteList(request.getRequestURI()) || !JwtUtils.isNotContainAccountIdHeader(request);
 	}
 
 	@Override
@@ -68,11 +66,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and get
 			// only the Token
 			String jwtToken = requestTokenHeader.substring(7);
-			if (jwtUtil.isInvalid(jwtToken)) {
+			if (JwtUtils.isInvalid(jwtToken)) {
 				callLogout(request, response, jwtToken);
 				return;
 			}
-			String username = jwtUtil.getUsernameFromToken(jwtToken);
+			String username = JwtUtils.getUsernameFromToken(jwtToken);
 			// Once we get the token validate it.
 			boolean authenticationIsNull = SecurityContextHolder.getContext().getAuthentication() == null;
 			if (username != null && authenticationIsNull) {
@@ -80,7 +78,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 						RabbitMQConstant.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
 				// if token is valid configure Spring Security to manually set
 				// authentication
-				if (jwtUtil.validateToken(jwtToken, userDetails)) {
+				if (JwtUtils.validateToken(jwtToken, userDetails)) {
 					setAuthentication(userDetails, request);
 				}
 			}
@@ -121,7 +119,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 
 	private ModifiedRequest populateRequestWithHeaders(HttpServletRequest request, String token) throws Exception {
-		Claims claims = jwtUtil.getAllClaimsFromToken(token);
+		Claims claims = JwtUtils.getAllClaimsFromToken(token);
 		ModifiedRequest modifiedRequest = new ModifiedRequest(request);
 		modifiedRequest.addHeader(GlobalConstant.X_ACCOUNT_ID,
 				String.valueOf(claims.get(GlobalConstant.ACCOUNT_ID_STRING)));
