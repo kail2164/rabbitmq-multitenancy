@@ -3,29 +3,34 @@ package com.example.common.dto;
 import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.EntityListeners;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 	@Column(name = "create_at", insertable = true, updatable = false, columnDefinition= "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
+	@CreatedDate
 	private OffsetDateTime createAt;
 	
-	@Column(name = "update_at", insertable = true, updatable = true, columnDefinition= "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
-	private OffsetDateTime updateAt;	
+	@Column(name = "modified_at", insertable = true, updatable = true, columnDefinition= "TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP")
+	@LastModifiedDate
+	private OffsetDateTime modifiedAt;	
 	
-	@PrePersist
-	public void onCreate() {
-		this.setCreateAt(OffsetDateTime.now());
-		this.setUpdateAt(OffsetDateTime.now());		
-	}
+	@Column(name = "created_by")
+    @CreatedBy
+    private String createdBy;
 
-	@PreUpdate
-	public void onPersist() {
-		this.setUpdateAt(OffsetDateTime.now());		
-	}
+    @Column(name = "modified_by")
+    @LastModifiedBy
+    private String modifiedBy;
 }

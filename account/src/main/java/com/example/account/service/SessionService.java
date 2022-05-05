@@ -7,6 +7,7 @@ public interface SessionService {
 	void setSession(String token, UserSession session);
 	UserSession getSession(String token);
 	void removeToken(String token);
+	void removeOldTokens(UserSession session);
 	boolean isTokenExists(String token);
 	void validateToken(String token) throws CustomException;	
 }

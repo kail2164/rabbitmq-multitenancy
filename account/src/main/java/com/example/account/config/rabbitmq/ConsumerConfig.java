@@ -30,6 +30,10 @@ public class ConsumerConfig {
 	public Queue queueFetchAllSchemas() {
 		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_GET_ALL_SCHEMAS);
 	}
+	@Bean
+	public Queue queueGetUserDetails() {
+		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_GET_USER_DETAILS);
+	}
 	@Bean 
 	public Binding bindingLogout() {
 		return BindingBuilder.bind(queueLogout()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT);
@@ -41,5 +45,9 @@ public class ConsumerConfig {
 	@Bean 
 	public Binding bindingFetchAllSchemas() {
 		return BindingBuilder.bind(queueFetchAllSchemas()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_GET_ALL_SCHEMAS);
+	}
+	@Bean 
+	public Binding bindingGetUserDetails() {
+		return BindingBuilder.bind(queueGetUserDetails()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_GET_USER_DETAILS);
 	}	
 }

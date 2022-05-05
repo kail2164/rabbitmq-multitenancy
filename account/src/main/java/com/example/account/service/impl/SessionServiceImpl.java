@@ -1,7 +1,7 @@
 package com.example.account.service.impl;
 
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,9 +30,18 @@ public class SessionServiceImpl implements SessionService {
 	}
 
 	@Override
+	public void removeOldTokens(UserSession session) {
+		for(Entry<String, UserSession> entry : cacheHashMap.entrySet()) {
+			if(session.equals(entry.getValue())) {
+				removeToken(entry.getKey());
+			}
+		}		
+	}
+	
+	@Override
 	public void removeToken(String token) {
 		cacheHashMap.remove(token);
-		deleteTokenIfExist(token);
+		deleteOldToken(token);
 	}
 
 	@Override
@@ -46,7 +55,9 @@ public class SessionServiceImpl implements SessionService {
 			userSessionRepository.findById(token).orElseThrow(()-> new CustomException(APIStatus.BAD_REQUEST, "Invalid token"));
 		}
 	}
-	private void deleteTokenIfExist(String token) {
+	private void deleteOldToken(String token) {
 		userSessionRepository.findById(token).ifPresent(session -> userSessionRepository.deleteById(token));		
 	}
+
+	
 }

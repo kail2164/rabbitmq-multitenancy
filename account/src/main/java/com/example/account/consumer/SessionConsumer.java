@@ -37,4 +37,9 @@ public class SessionConsumer implements Consumer{
 		authenticationService.logout(token);
 		return new RemoteInvocationResult(true);
 	}
+	
+	@RabbitListener(queues = "#{queueGetUserDetails.name}", returnExceptions = "true")
+	public RemoteInvocationResult getUserDetails(String username) throws Exception {	
+		return new RemoteInvocationResult(authenticationService.loadUserByUsername(username));
+	}
 }

@@ -1,4 +1,4 @@
-package com.example.account.config.security;
+package com.example.common.config;
 
 import java.io.IOException;
 import java.io.Serializable;

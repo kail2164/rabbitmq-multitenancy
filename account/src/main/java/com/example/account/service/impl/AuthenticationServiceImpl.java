@@ -1,12 +1,15 @@
 package com.example.account.service.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +24,13 @@ import com.example.account.repository.UserSessionRepository;
 import com.example.account.service.AccountService;
 import com.example.account.service.AuthenticationService;
 import com.example.account.service.SessionService;
-import com.example.account.util.JwtUtil;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.dto.request.LoginRequest;
 import com.example.common.dto.request.RegisterRequest;
 import com.example.common.dto.response.LoginResponse;
 import com.example.common.dto.response.RegisterResponse;
+import com.example.common.util.JwtUtil;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -62,16 +65,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 			} catch (Exception e) {
 				throw new CustomException(APIStatus.BAD_REQUEST,
-						"Username or password is not correct. If you forgot your password, click below to reset.");
+						"Username or password is not correct!");
 			}
 		}
 		String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()), account.getId());
 		// Delete old token if exist
-		sessionService.removeToken(token);
 		UserSession session = new UserSession();
 		session.setToken(token);
 		session.setAccount(account);
 		session.setExpireAt(jwtUtil.getExpirationDateFromToken(token));
+		sessionService.removeOldTokens(session);
 		userSessionRepository.save(session); // save session to DB
 		sessionService.setSession(token, session); // Save session into RAM
 		return AccountConverter.convertToLoginResponse(account, token);
@@ -87,8 +90,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		String ROLE_PREFIX = "ROLE_";
 		Account account = accountService.find(username);
-		return new User(account.getUsername(), account.getPassword(), new ArrayList<>());
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + account.getRole()));
+		return new User(account.getUsername(), account.getPassword(), authorities);
 	}
 
 	@Override

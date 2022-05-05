@@ -7,5 +7,4 @@ import com.example.account.model.UserSession;
 
 @Repository
 public interface UserSessionRepository extends JpaRepository<UserSession, String> {
-
 }

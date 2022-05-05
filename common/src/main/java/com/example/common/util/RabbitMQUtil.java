@@ -30,19 +30,12 @@ public class RabbitMQUtil {
     }
 	
 	public static <T extends Object> T sendAndReceive(String topic, String route, Object value, Class<T> clazz) throws CustomException {
-		log.error("Routing: " + route);
-		log.error("topic: " + topic);
-		log.error("value: " + value);
-
 		Object result = callRabbitMQ(topic, route, value);		
 		return clazz.cast(result);		
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends Object> List<T> sendAndReceiveList(String topic, String route, Object value, Class<T> clazz) throws CustomException {
-		log.error("Routing: " + route);
-		log.error("topic: " + topic);
-		log.error("value: " + value);
 		Object result = callRabbitMQ(topic, route, value);
 		if(Objects.nonNull(result) ) {
 			if(result.getClass().isArray()) {
@@ -56,11 +49,12 @@ public class RabbitMQUtil {
 		return null;		
 	}
 	
+	public static void send(String topic, String route, Object value) throws CustomException{
+		callRabbitMQ(topic, route, value);
+	}
+	
 	private static Object callRabbitMQ(String topic, String route, Object value) throws CustomException {
 		try {
-			log.error("Routing: " + route);
-			log.error("topic: " + topic);
-			log.error("value: " + value);
 			Object result = rabbitTemplateStatic.convertSendAndReceive(topic, route, value);
 			if(Objects.nonNull(result) && result instanceof RemoteInvocationResult) {		
 				RemoteInvocationResult casted = RemoteInvocationResult.class.cast(result);

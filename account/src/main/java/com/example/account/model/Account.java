@@ -3,11 +3,14 @@ package com.example.account.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.common.dto.BaseEntity;
 
@@ -17,8 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity(name = "tbl_account")
-public class Account extends BaseEntity {
-	
+public class Account extends BaseEntity {	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
