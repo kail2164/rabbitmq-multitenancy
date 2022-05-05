@@ -17,13 +17,21 @@ import com.example.product.repository.ProductRepository;
 import com.example.product.service.ProductService;
 import com.example.product.validator.ProductValidator;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
+	private ProductRepository productRepository;
+
 	@Autowired
-	ProductRepository productRepository;
+	public ProductServiceImpl(ProductRepository productRepository) {
+		super();
+		this.productRepository = productRepository;
+	}
 
 	@Override
 	public List<ProductResponse> getProducts(int page, int maxRecords) throws CustomException {

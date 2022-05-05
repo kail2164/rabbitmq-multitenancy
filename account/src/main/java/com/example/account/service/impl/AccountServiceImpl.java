@@ -18,24 +18,29 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.util.ObjectUtils;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class AccountServiceImpl implements AccountService {
+	private PasswordEncoder passwordEncoder;
+	private AccountRepository accountRepository;
+
 	@Autowired
-	PasswordEncoder passwordEncoder;
-	@Autowired
-	AccountRepository accountRepository;
+	public AccountServiceImpl(PasswordEncoder passwordEncoder, AccountRepository accountRepository) {
+		this.passwordEncoder = passwordEncoder;
+		this.accountRepository = accountRepository;
+	}
 
 	@Override
-	public Account create(Account acc) throws CustomException {		
-		AccountValidator.validateAccount(acc);		
+	public Account create(Account acc) throws CustomException {
+		AccountValidator.validateAccount(acc);
 		String password = acc.getPassword();
 		PasswordValidator.validatePassword(password);
 		acc.setPassword(passwordEncoder.encode(password));
-		try {			
+		try {
 			return accountRepository.save(acc);
 		} catch (Exception e) {
 			log.error("Error in create: ", e);
@@ -46,10 +51,10 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	@Transactional(rollbackOn = Exception.class)
 	public Account update(long id, Account acc, boolean nullableUpdate) throws CustomException {
-		AccountValidator.validateAccount(acc);				
+		AccountValidator.validateAccount(acc);
 		try {
 			Optional<Account> optAccount = accountRepository.findById(id);
-			if(optAccount.isEmpty()) {
+			if (optAccount.isEmpty()) {
 				throw new CustomException(APIStatus.NOT_FOUND, "Not found account by id: " + id);
 			}
 			Account accountInDB = optAccount.get();
@@ -64,10 +69,10 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void delete(long id) throws CustomException{
+	public void delete(long id) throws CustomException {
 		try {
 			Optional<Account> optAccount = accountRepository.findById(id);
-			if(optAccount.isEmpty()) {
+			if (optAccount.isEmpty()) {
 				throw new CustomException(APIStatus.NOT_FOUND, "Not found account by id: " + id);
 			}
 			Account accountInDB = optAccount.get();
@@ -79,12 +84,14 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account find(String username) throws UsernameNotFoundException  {
-		Account account = accountRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException ("Username not found"));
+	public Account find(String username) throws UsernameNotFoundException {
+		Account account = accountRepository.findByUsernameIgnoreCase(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 		return account;
 	}
-	
-	private Account updateNewInfo(Account oldAccount, Account newAccount, boolean nullableUpdate) throws CustomException{
+
+	private Account updateNewInfo(Account oldAccount, Account newAccount, boolean nullableUpdate)
+			throws CustomException {
 		ObjectUtils.setFieldValue(newAccount, oldAccount, "firstName", nullableUpdate);
 		ObjectUtils.setFieldValue(newAccount, oldAccount, "lastName", nullableUpdate);
 		return oldAccount;

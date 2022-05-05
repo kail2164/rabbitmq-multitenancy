@@ -15,50 +15,60 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 
 import javax.annotation.PostConstruct;
+
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class RabbitMQUtils {
+	private RabbitTemplate rabbitTemplate;
+	private static RabbitTemplate rabbitTemplateStatic;
+
 	@Autowired
-	private RabbitTemplate rabbitTemplate;	
-	private static RabbitTemplate rabbitTemplateStatic;	
-	
-	@PostConstruct
-    public void init() {
-		RabbitMQUtils.rabbitTemplateStatic = rabbitTemplate;
-    }
-	
-	public static <T extends Object> T sendAndReceive(String topic, String route, Object value, Class<T> clazz) throws CustomException {
-		Object result = callRabbitMQ(topic, route, value);		
-		return clazz.cast(result);		
+	public RabbitMQUtils(RabbitTemplate rabbitTemplate) {
+		super();
+		this.rabbitTemplate = rabbitTemplate;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T extends Object> List<T> sendAndReceiveList(String topic, String route, Object value, Class<T> clazz) throws CustomException {
+
+	@PostConstruct
+	public void init() {
+		RabbitMQUtils.rabbitTemplateStatic = rabbitTemplate;
+	}
+
+	public static <T extends Object> T sendAndReceive(String topic, String route, Object value, Class<T> clazz)
+			throws CustomException {
 		Object result = callRabbitMQ(topic, route, value);
-		if(Objects.nonNull(result) ) {
-			if(result.getClass().isArray()) {
+		return clazz.cast(result);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Object> List<T> sendAndReceiveList(String topic, String route, Object value,
+			Class<T> clazz) throws CustomException {
+		Object result = callRabbitMQ(topic, route, value);
+		if (Objects.nonNull(result)) {
+			if (result.getClass().isArray()) {
 				return Arrays.asList((T) result);
 			} else if (result instanceof Collection) {
-		       return new ArrayList<>((Collection<T>) result);
-		    } else {
-		       throw cannotCastException(result.getClass().getName(), clazz.getName());
+				return new ArrayList<>((Collection<T>) result);
+			} else {
+				throw cannotCastException(result.getClass().getName(), clazz.getName());
 			}
 		}
-		return null;		
+		return null;
 	}
-	
-	public static void send(String topic, String route, Object value) throws CustomException{
+
+	public static void send(String topic, String route, Object value) throws CustomException {
 		rabbitTemplateStatic.convertAndSend(topic, route, value);
 	}
-	
+
 	private static Object callRabbitMQ(String topic, String route, Object value) throws CustomException {
 		try {
 			Object result = rabbitTemplateStatic.convertSendAndReceive(topic, route, value);
-			if(Objects.nonNull(result) && result instanceof RemoteInvocationResult) {		
+			if (Objects.nonNull(result) && result instanceof RemoteInvocationResult) {
 				RemoteInvocationResult casted = RemoteInvocationResult.class.cast(result);
-				if(casted.hasException()) {
+				if (casted.hasException()) {
 					log.error("Error in callRabbitMQ: ", casted.getException());
 					throw new CustomException(APIStatus.BAD_REQUEST, casted.getException().getMessage());
 				}
@@ -68,11 +78,11 @@ public class RabbitMQUtils {
 		} catch (Exception e) {
 			log.error("Error in callRabbitMQ: ", e);
 			throw new CustomException(APIStatus.BAD_REQUEST, e.getMessage());
-		}		
+		}
 	}
-	
-	
+
 	private static CustomException cannotCastException(String fromClass, String toClass) {
 		return new CustomException(APIStatus.BAD_REQUEST, "Cannot cast class: " + fromClass + " to: " + toClass);
 	}
+
 }

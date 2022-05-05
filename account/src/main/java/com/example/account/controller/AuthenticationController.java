@@ -31,13 +31,19 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NoArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication Controller", description = "Controller for actions related to authentication")
+@NoArgsConstructor
 public class AuthenticationController {
+	private AuthenticationService authenticationService;
 	@Autowired
-	AuthenticationService authenticationService;
+	public AuthenticationController(AuthenticationService authenticationService) {
+		super();
+		this.authenticationService = authenticationService;
+	}
 
 	@PostMapping("/login")
 	@Operation(description = "API used for logging in")
@@ -56,7 +62,8 @@ public class AuthenticationController {
 	@ApiResponse(content = @Content(schema = @Schema(implementation = String.class)), responseCode = "200", description = "OK")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
-	public ResponseEntity<String> logout(@RequestParam(name = "token", required = true) String token) throws CustomException {
+	public ResponseEntity<String> logout(@RequestParam(name = "token", required = true) String token)
+			throws CustomException {
 		authenticationService.logout(token);
 		return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
 	}
@@ -70,8 +77,8 @@ public class AuthenticationController {
 			@Parameter(name = "RegisterRequestDTO", description = "Register Request Object", required = true, allowEmptyValue = false) @RequestBody RegisterRequest registerRequest)
 			throws CustomException {
 		return ResponseHelper.setSuccessResult(
-				new APIResponse<RegisterResponse>(
-						authenticationService.register(registerRequest)),
+				new APIResponse<RegisterResponse>(authenticationService.register(registerRequest)),
 				request.getMethod());
 	}
+
 }

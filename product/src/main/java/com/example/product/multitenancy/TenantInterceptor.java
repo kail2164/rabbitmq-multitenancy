@@ -14,13 +14,20 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.util.JwtUtils;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Slf4j
+@NoArgsConstructor
 public class TenantInterceptor implements HandlerInterceptor {
+
+	private JwtUtils jwtUtil;
+
 	@Autowired
-	JwtUtils jwtUtil;
+	public TenantInterceptor(JwtUtils jwtUtil) {
+		super();
+		this.jwtUtil = jwtUtil;
+	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
@@ -40,4 +47,5 @@ public class TenantInterceptor implements HandlerInterceptor {
 			ModelAndView modelAndView) throws Exception {
 		TenantContext.clear();
 	}
+
 }

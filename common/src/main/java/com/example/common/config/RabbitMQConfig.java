@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,9 +17,17 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class RabbitMQConfig {
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public class RabbitMQConfig {	
+	private SimpleRabbitListenerContainerFactory simpleContainer;
+
 	@Autowired
-	SimpleRabbitListenerContainerFactory simpleContainer;
+	public RabbitMQConfig(SimpleRabbitListenerContainerFactory simpleContainer) {
+		super();
+		this.simpleContainer = simpleContainer;
+	}
 
 	@Bean
 	public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {

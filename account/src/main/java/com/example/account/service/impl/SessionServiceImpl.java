@@ -12,11 +12,19 @@ import com.example.account.service.SessionService;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 
-@Service
-public class SessionServiceImpl implements SessionService {
-	@Autowired
-	UserSessionRepository userSessionRepository;
+import lombok.NoArgsConstructor;
 
+@Service
+@NoArgsConstructor
+public class SessionServiceImpl implements SessionService {	
+	private UserSessionRepository userSessionRepository;
+
+	@Autowired
+	public SessionServiceImpl(UserSessionRepository userSessionRepository) {
+		super();
+		this.userSessionRepository = userSessionRepository;
+	}
+	
 	private static HashMap<String, UserSession> cacheHashMap = new HashMap<>();
 
 	@Override

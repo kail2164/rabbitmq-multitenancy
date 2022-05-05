@@ -10,15 +10,23 @@ import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.NoArgsConstructor;
+
 @Component
+@NoArgsConstructor
 public class ConnectionProvider implements MultiTenantConnectionProvider {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1532155100098995590L;
-	@Autowired
 	private DataSource dataSource;
+
+	@Autowired
+	public ConnectionProvider(DataSource dataSource) {
+		super();
+		this.dataSource = dataSource;
+	}
 
 	@Override
 	public Connection getAnyConnection() throws SQLException {

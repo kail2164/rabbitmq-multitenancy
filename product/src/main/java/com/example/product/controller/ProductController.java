@@ -33,13 +33,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NoArgsConstructor;
 
 @RestController
 @RequestMapping("/api/product")
 @Tag(name = "Product Controller", description = "Controller for actions related to product")
+@NoArgsConstructor
 public class ProductController implements SecuredController {
+	private ProductService productService;
+
 	@Autowired
-	ProductService productService;
+	public ProductController(ProductService productService) {
+		super();
+		this.productService = productService;
+	}
 
 	@GetMapping()
 	@Operation(description = "Get products")
@@ -76,8 +83,8 @@ public class ProductController implements SecuredController {
 			@Parameter(allowEmptyValue = false, description = "Is able to update with null values", example = "false") @RequestParam(required = true) boolean nullableUpdate,
 			@Parameter(name = "ProductRequestDTO", description = "Product request object", required = true, allowEmptyValue = false) @RequestBody(required = true) ProductRequest product)
 			throws Exception {
-		return ResponseHelper.setSuccessResult(new APIResponse<ProductResponse>(productService.update(product, nullableUpdate)),
-				request.getMethod());
+		return ResponseHelper.setSuccessResult(
+				new APIResponse<ProductResponse>(productService.update(product, nullableUpdate)), request.getMethod());
 	}
 
 	@DeleteMapping()

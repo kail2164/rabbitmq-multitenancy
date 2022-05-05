@@ -34,16 +34,21 @@ import com.example.common.util.RabbitMQUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.NoArgsConstructor;
 
 @Primary
 @Component
+@NoArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
+	private JwtUtils jwtUtil;	
+	private HandlerExceptionResolver resolver;
 
 	@Autowired
-	private JwtUtils jwtUtil;
-	@Autowired
-	@Qualifier("handlerExceptionResolver")
-	private HandlerExceptionResolver resolver;
+	public JwtRequestFilter(JwtUtils jwtUtil,@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+		super();
+		this.jwtUtil = jwtUtil;
+		this.resolver = resolver;
+	}
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -55,7 +60,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		try {
 			if (isAuthMissing(request)) {
-				resolver.resolveException(request, response, null, new CustomException(APIStatus.UNAUTHORIZED, "Missing Authorization header"));
+				resolver.resolveException(request, response, null,
+						new CustomException(APIStatus.UNAUTHORIZED, "Missing Authorization header"));
 				return;
 			}
 			final String requestTokenHeader = request.getHeader("Authorization");
@@ -91,19 +97,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 					new CustomException(APIStatus.BAD_REQUEST, e.getMessage()));
 		}
 	}
-	
+
 	private void setAuthentication(UserDetails userDetails, HttpServletRequest request) {
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				userDetails, null, userDetails.getAuthorities());
-		usernamePasswordAuthenticationToken
-				.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+		usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		// After setting the Authentication in the context, we specify
 		// that the current user is authenticated. So it passes the
 		// Spring Security Configurations successfully.
 		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 	}
 
-	private void callLogout(HttpServletRequest request, HttpServletResponse response, String jwtToken) throws CustomException {
+	private void callLogout(HttpServletRequest request, HttpServletResponse response, String jwtToken)
+			throws CustomException {
 		RabbitMQUtils.send(RabbitMQConstant.TOPIC_ACCOUNT, RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT, jwtToken);
 		resolver.resolveException(request, response, null,
 				new CustomException(APIStatus.BAD_REQUEST, "JWT Token has been expired"));

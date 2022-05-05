@@ -38,17 +38,21 @@ import lombok.extern.slf4j.Slf4j;
 @DependsOn("rabbitMQUtils")
 @Slf4j
 public class SchemaServiceImpl implements SchemaService, InitializingBean {
-	@Autowired
 	private DataSource dataSource;
-	@Autowired
-	AccountPublisher accountPublisher;
-	@Autowired
-	org.springframework.core.env.Environment env;
-	@Autowired
-	ExecutorService singleThreadExecutor;
+	private AccountPublisher accountPublisher;
+	private org.springframework.core.env.Environment env;
+	private ExecutorService singleThreadExecutor;
+	private Map<String, String> settings = new HashMap<>();
 
-	Logger logger = LoggerFactory.getLogger(SchemaServiceImpl.class);
-	Map<String, String> settings = new HashMap<>();
+	@Autowired
+	public SchemaServiceImpl(DataSource dataSource, AccountPublisher accountPublisher,
+			org.springframework.core.env.Environment env, ExecutorService singleThreadExecutor) {
+		super();
+		this.dataSource = dataSource;
+		this.accountPublisher = accountPublisher;
+		this.env = env;
+		this.singleThreadExecutor = singleThreadExecutor;
+	}
 
 	@Override
 	public void createSchema(String schema) {

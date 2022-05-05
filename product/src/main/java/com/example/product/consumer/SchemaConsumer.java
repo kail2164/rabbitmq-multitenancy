@@ -1,21 +1,28 @@
 package com.example.product.consumer;
 
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.product.service.SchemaService;
 
+import lombok.NoArgsConstructor;
+
 @Component
+@NoArgsConstructor
 public class SchemaConsumer {
+	private SchemaService schemaService;
+
 	@Autowired
-	Queue queueSchema;
-	@Autowired
-	SchemaService schemaService;
+	public SchemaConsumer(SchemaService schemaService) {
+		super();
+		this.schemaService = schemaService;
+	}
 	
 	@RabbitListener(queues = "#{queueSchema.name}")
 	public void receivedSchema(String schemaName) {
-		schemaService.createSchema(schemaName);		
+		schemaService.createSchema(schemaName);
 	}
+
+	
 }

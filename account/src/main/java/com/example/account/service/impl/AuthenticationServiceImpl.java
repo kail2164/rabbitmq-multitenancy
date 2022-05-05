@@ -35,29 +35,35 @@ import com.example.common.dto.response.LoginResponse;
 import com.example.common.dto.response.RegisterResponse;
 import com.example.common.util.JwtUtils;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+	private AccountService accountService;
+	private SessionService sessionService;
+	private AccountRepository accountRepository;
+	private UserSessionRepository userSessionRepository;
+	private AuthenticationManager authenticationManager;
+	private SchemaPublisher schemaPublisher;
+	private JwtUtils jwtUtil;
+	
 	@Autowired
-	AccountService accountService;
-	@Autowired
-	SessionService sessionService;
-
-	@Autowired
-	AccountRepository accountRepository;
-	@Autowired
-	UserSessionRepository userSessionRepository;
-
-	@Autowired
-	@Lazy
-	AuthenticationManager authenticationManager;
-	@Autowired
-	SchemaPublisher schemaPublisher;
-	@Autowired
-	JwtUtils jwtUtil;
-
+	public AuthenticationServiceImpl(AccountService accountService, SessionService sessionService,
+			AccountRepository accountRepository, UserSessionRepository userSessionRepository,
+			@Lazy AuthenticationManager authenticationManager, SchemaPublisher schemaPublisher, JwtUtils jwtUtil) {
+		super();
+		this.accountService = accountService;
+		this.sessionService = sessionService;
+		this.accountRepository = accountRepository;
+		this.userSessionRepository = userSessionRepository;
+		this.authenticationManager = authenticationManager;
+		this.schemaPublisher = schemaPublisher;
+		this.jwtUtil = jwtUtil;
+	}
+	
 	@Override
 	public LoginResponse login(LoginRequest request) throws CustomException {
 		Account account = accountRepository.findByUsernameIgnoreCase(request.getUsername())
@@ -79,6 +85,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		setSession(token, account);
 		return AccountConverter.convertToLoginResponse(account, token);
 	}
+
+	
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)

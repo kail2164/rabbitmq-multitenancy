@@ -22,12 +22,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final String SWAGGER_RESOURCES_PATH = "/swagger-resources/**";
 	private static final String COMMON_AUTH_PATH = "/api/auth/**";
 
-	@Autowired
-	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;	
-	@Autowired
+	
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;		
 	private JwtRequestFilter jwtRequestFilter;
 	
-		
+	@Autowired	
+	public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+			JwtRequestFilter jwtRequestFilter) {
+		super();
+		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+		this.jwtRequestFilter = jwtRequestFilter;
+	}
+
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {

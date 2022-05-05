@@ -26,14 +26,18 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @EnableJpaRepositories(basePackages = {
 		"com.example.product.repository" }, entityManagerFactoryRef = "tenantEntityManagerFactory", transactionManagerRef = "tenantTransactionManager")
 public class TenantPersistentConfig {
-	@Autowired
-	JpaProperties jpaProperties;
+	private JpaProperties jpaProperties;
+	private ConfigurableListableBeanFactory beanFactory;
+	private org.springframework.core.env.Environment env;
 
 	@Autowired
-	ConfigurableListableBeanFactory beanFactory;
-
-	@Autowired
-	protected org.springframework.core.env.Environment env;
+	public TenantPersistentConfig(JpaProperties jpaProperties, ConfigurableListableBeanFactory beanFactory,
+			org.springframework.core.env.Environment env) {
+		super();
+		this.jpaProperties = jpaProperties;
+		this.beanFactory = beanFactory;
+		this.env = env;
+	}
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean tenantEntityManagerFactory(DataSource dataSource,

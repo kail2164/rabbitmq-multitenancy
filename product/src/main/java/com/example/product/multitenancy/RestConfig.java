@@ -6,14 +6,22 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-public class RestConfig implements WebMvcConfigurer {
-	 @Autowired
-	  HandlerInterceptor tenantInterceptor;
+import lombok.NoArgsConstructor;
 
-	  @Override
-	  public void addInterceptors(InterceptorRegistry registry) {
-	    registry.addInterceptor(tenantInterceptor);
-	  }
+@Configuration
+@NoArgsConstructor
+public class RestConfig implements WebMvcConfigurer {
+	private HandlerInterceptor tenantInterceptor;
+
+	@Autowired
+	public RestConfig(HandlerInterceptor tenantInterceptor) {
+		super();
+		this.tenantInterceptor = tenantInterceptor;
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(tenantInterceptor);
+	}
 
 }
