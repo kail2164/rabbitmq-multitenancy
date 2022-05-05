@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import com.example.common.constants.GlobalConstant;
-import com.example.common.constants.RabbitMQConstant;
+import com.example.common.constants.GlobalConstants;
+import com.example.common.constants.RabbitMQConstants;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.util.JwtUtils;
@@ -74,8 +74,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// Once we get the token validate it.
 			boolean authenticationIsNull = SecurityContextHolder.getContext().getAuthentication() == null;
 			if (username != null && authenticationIsNull) {
-				UserDetails userDetails = RabbitMQUtils.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
-						RabbitMQConstant.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
+				UserDetails userDetails = RabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+						RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
 				// if token is valid configure Spring Security to manually set
 				// authentication
 				if (JwtUtils.validateToken(jwtToken, userDetails)) {
@@ -108,21 +108,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private void callLogout(HttpServletRequest request, HttpServletResponse response, String jwtToken)
 			throws CustomException {
-		RabbitMQUtils.send(RabbitMQConstant.TOPIC_ACCOUNT, RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT, jwtToken);
+		RabbitMQUtils.send(RabbitMQConstants.TOPIC_ACCOUNT, RabbitMQConstants.ROUTING_ACCOUNT_LOGOUT, jwtToken);
 		resolver.resolveException(request, response, null,
 				new CustomException(APIStatus.BAD_REQUEST, "JWT Token has been expired"));
 	}
 
 	private boolean isAuthMissing(HttpServletRequest request) {
-		return Objects.isNull(request.getHeader(GlobalConstant.AUTHORIZATION_STRING))
-				|| request.getHeader(GlobalConstant.AUTHORIZATION_STRING).isEmpty();
+		return Objects.isNull(request.getHeader(GlobalConstants.AUTHORIZATION_STRING))
+				|| request.getHeader(GlobalConstants.AUTHORIZATION_STRING).isEmpty();
 	}
 
 	private ModifiedRequest populateRequestWithHeaders(HttpServletRequest request, String token) throws Exception {
 		Claims claims = JwtUtils.getAllClaimsFromToken(token);
 		ModifiedRequest modifiedRequest = new ModifiedRequest(request);
-		modifiedRequest.addHeader(GlobalConstant.X_ACCOUNT_ID,
-				String.valueOf(claims.get(GlobalConstant.ACCOUNT_ID_STRING)));
+		modifiedRequest.addHeader(GlobalConstants.X_ACCOUNT_ID,
+				String.valueOf(claims.get(GlobalConstants.ACCOUNT_ID_STRING)));
 		return modifiedRequest;
 	}
 

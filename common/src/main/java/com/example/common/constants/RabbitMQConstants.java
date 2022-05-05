@@ -2,7 +2,7 @@ package com.example.common.constants;
 
 import com.example.common.util.StringUtils;
 
-public interface RabbitMQConstant {
+public interface RabbitMQConstants {
 	String TOPIC = "topic";
 	String FANOUT = "fanout";
 	String QUEUE = "queue";

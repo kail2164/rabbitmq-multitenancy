@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.example.common.constants.GlobalConstant;
-import com.example.common.constants.RabbitMQConstant;
+import com.example.common.constants.GlobalConstants;
+import com.example.common.constants.RabbitMQConstants;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 
@@ -68,13 +68,13 @@ public class JwtUtils implements Serializable {
 	}
 
 	public static boolean isNotContainAccountIdHeader(HttpServletRequest request) {
-		return Objects.isNull(request.getHeader(GlobalConstant.X_ACCOUNT_ID))
-				|| request.getHeader(GlobalConstant.X_ACCOUNT_ID).isEmpty();
+		return Objects.isNull(request.getHeader(GlobalConstants.X_ACCOUNT_ID))
+				|| request.getHeader(GlobalConstants.X_ACCOUNT_ID).isEmpty();
 	}
 
 	public static boolean isInvalid(String token) throws Exception {
-		boolean isValid = RabbitMQUtils.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
-				RabbitMQConstant.ROUTING_ACCOUNT_VALIDATE_TOKEN, token, Boolean.class);
+		boolean isValid = RabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+				RabbitMQConstants.ROUTING_ACCOUNT_VALIDATE_TOKEN, token, Boolean.class);
 		if (!isValid) {
 			throw new CustomException(APIStatus.BAD_REQUEST, "Invalid token");
 		}
@@ -96,7 +96,7 @@ public class JwtUtils implements Serializable {
 	// generate token for user
 	public static String generateToken(UserDetails userDetails, Long id) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put(GlobalConstant.ACCOUNT_ID_STRING, id);
+		claims.put(GlobalConstants.ACCOUNT_ID_STRING, id);
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 

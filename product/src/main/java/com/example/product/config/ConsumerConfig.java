@@ -8,7 +8,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.common.constants.RabbitMQConstant;
+import com.example.common.constants.RabbitMQConstants;
 import com.example.common.rabbitmq.Consumer;
 import com.example.product.consumer.ProductConsumer;
 
@@ -16,19 +16,19 @@ import com.example.product.consumer.ProductConsumer;
 public class ConsumerConfig {
 	@Bean
 	public TopicExchange topic() {
-		return new TopicExchange(RabbitMQConstant.TOPIC_PRODUCT);
+		return new TopicExchange(RabbitMQConstants.TOPIC_PRODUCT);
 	}
 	@Bean
 	public FanoutExchange schemaFanout() {
-		return new FanoutExchange(RabbitMQConstant.FANOUT_SCHEMA);
+		return new FanoutExchange(RabbitMQConstants.FANOUT_SCHEMA);
 	}
 	@Bean
 	public Queue queueSchema() {
-		return new Queue(RabbitMQConstant.QUEUE_PRODUCT_SCHEMA);
+		return new Queue(RabbitMQConstants.QUEUE_PRODUCT_SCHEMA);
 	}	
 	@Bean
 	public Queue queueGetProductByAccountId() {
-		return new Queue(RabbitMQConstant.QUEUE_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
+		return new Queue(RabbitMQConstants.QUEUE_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
 	}
 	@Bean
 	public Binding bindingSchema() {
@@ -36,6 +36,6 @@ public class ConsumerConfig {
 	}
 	@Bean 
 	public Binding bindingGetProductByAccountId() {
-		return BindingBuilder.bind(queueGetProductByAccountId()).to(topic()).with(RabbitMQConstant.ROUTING_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
+		return BindingBuilder.bind(queueGetProductByAccountId()).to(topic()).with(RabbitMQConstants.ROUTING_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
 	}	
 }

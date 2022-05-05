@@ -9,45 +9,45 @@ import org.springframework.context.annotation.Configuration;
 
 import com.example.account.consumer.AccountConsumer;
 import com.example.account.consumer.SessionConsumer;
-import com.example.common.constants.RabbitMQConstant;
+import com.example.common.constants.RabbitMQConstants;
 import com.example.common.rabbitmq.Consumer;
 
 @Configuration
 public class ConsumerConfig {
 	@Bean
 	public TopicExchange topic() {
-		return new TopicExchange(RabbitMQConstant.TOPIC_ACCOUNT);
+		return new TopicExchange(RabbitMQConstants.TOPIC_ACCOUNT);
 	}
 	@Bean
 	public Queue queueLogout() {
-		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_LOGOUT);
+		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_LOGOUT);
 	}
 	@Bean
 	public Queue queueValidateToken() {
-		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_VALIDATE_TOKEN);
+		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_VALIDATE_TOKEN);
 	}
 	@Bean
 	public Queue queueFetchAllSchemas() {
-		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_GET_ALL_SCHEMAS);
+		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_GET_ALL_SCHEMAS);
 	}
 	@Bean
 	public Queue queueGetUserDetails() {
-		return new Queue(RabbitMQConstant.QUEUE_ACCOUNT_GET_USER_DETAILS);
+		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_GET_USER_DETAILS);
 	}
 	@Bean 
 	public Binding bindingLogout() {
-		return BindingBuilder.bind(queueLogout()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT);
+		return BindingBuilder.bind(queueLogout()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_LOGOUT);
 	}
 	@Bean 
 	public Binding bindingValidateToken() {
-		return BindingBuilder.bind(queueValidateToken()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_VALIDATE_TOKEN);
+		return BindingBuilder.bind(queueValidateToken()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_VALIDATE_TOKEN);
 	}
 	@Bean 
 	public Binding bindingFetchAllSchemas() {
-		return BindingBuilder.bind(queueFetchAllSchemas()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_GET_ALL_SCHEMAS);
+		return BindingBuilder.bind(queueFetchAllSchemas()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_GET_ALL_SCHEMAS);
 	}
 	@Bean 
 	public Binding bindingGetUserDetails() {
-		return BindingBuilder.bind(queueGetUserDetails()).to(topic()).with(RabbitMQConstant.ROUTING_ACCOUNT_GET_USER_DETAILS);
+		return BindingBuilder.bind(queueGetUserDetails()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS);
 	}	
 }

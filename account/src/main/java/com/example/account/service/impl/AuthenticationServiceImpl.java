@@ -34,6 +34,7 @@ import com.example.common.dto.request.RegisterRequest;
 import com.example.common.dto.response.LoginResponse;
 import com.example.common.dto.response.RegisterResponse;
 import com.example.common.util.JwtUtils;
+import com.example.common.util.StringUtils;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,10 +63,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public LoginResponse login(LoginRequest request) throws CustomException {
+		if(StringUtils.isNullOrEmpty(request.getUsername()) || StringUtils.isNullOrEmpty(request.getPassword())) {
+			throw new CustomException(APIStatus.NOT_FOUND, "Username and password cannot be null");
+		}
 		Account account = accountRepository.findByUsernameIgnoreCase(request.getUsername())
-				.orElseThrow(() -> new CustomException(APIStatus.UNAUTHORIZED, "User account does not exist"));
+				.orElseThrow(() -> new CustomException(APIStatus.NOT_FOUND, "User account does not exist"));
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		boolean isAnonymous = authentication.getAuthorities().stream()
+		boolean isAnonymous = authentication == null || authentication.getAuthorities().stream()
 				.anyMatch(r -> r.getAuthority().equals("ROLE_ANONYMOUS"));
 
 		if (isAnonymous) {

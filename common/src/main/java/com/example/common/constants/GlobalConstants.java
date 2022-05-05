@@ -1,6 +1,6 @@
 package com.example.common.constants;
 
-public interface GlobalConstant {
+public interface GlobalConstants {
 	String AUTHORIZATION_STRING = "Authorization";
 	String FILE_REGEX_SPLIT = "\\.(?=[^\\.]+$)";
 	String EMPTY_STRING = "";

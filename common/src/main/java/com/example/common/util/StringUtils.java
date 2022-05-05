@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.example.common.constants.GlobalConstant;
+import com.example.common.constants.GlobalConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,19 +24,19 @@ public class StringUtils {
 	}
 
 	public static String getQueueName(String... queueName) {
-		return StringUtils.concatStrings(GlobalConstant.DASH, queueName);
+		return StringUtils.concatStrings(GlobalConstants.DASH, queueName);
 	}
 
 	public static String getExchange(String serviceName, String exchange) {
-		return StringUtils.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, exchange);
+		return StringUtils.concatStrings(GlobalConstants.DOT, GlobalConstants.DEMO_STRING, serviceName, exchange);
 	}
 
 	public static String getAction(String... action) {
-		return StringUtils.concatStrings(GlobalConstant.DASH, action);
+		return StringUtils.concatStrings(GlobalConstants.DASH, action);
 	}
 
 	public static String getRoutingKey(String serviceName, String action, String charsAfter) {
-		return StringUtils.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, action,
+		return StringUtils.concatStrings(GlobalConstants.DOT, GlobalConstants.DEMO_STRING, serviceName, action,
 				charsAfter);
 	}
 
@@ -45,7 +45,7 @@ public class StringUtils {
 			Gson gson = new Gson();
 			return gson.toJson(strings);
 		} else {
-			return GlobalConstant.EMPTY_ARRAY_STRING;
+			return GlobalConstants.EMPTY_ARRAY_STRING;
 		}
 	}
 
@@ -87,7 +87,7 @@ public class StringUtils {
 			Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 			return gson.toJson(object);
 		}
-		return GlobalConstant.EMPTY_ARRAY_STRING;
+		return GlobalConstants.EMPTY_ARRAY_STRING;
 	}
 
 	public static String getJsonArrayStringFromListObjects(List<Object> objects) {
@@ -95,7 +95,7 @@ public class StringUtils {
 			Gson gson = new Gson();
 			return gson.toJson(objects);
 		}
-		return GlobalConstant.EMPTY_ARRAY_STRING;
+		return GlobalConstants.EMPTY_ARRAY_STRING;
 	}
 
 	public static String[] convertToLowerCaseStringArrayFromList(List<String> list) {
@@ -110,11 +110,11 @@ public class StringUtils {
 	}
 
 	public static String trimValue(String value) {
-		return isNullOrEmpty(value) ? GlobalConstant.EMPTY_STRING : value.trim();
+		return isNullOrEmpty(value) ? GlobalConstants.EMPTY_STRING : value.trim();
 	}
 
 	public static String getFileFormat(String fileName) {
-		String[] bits = fileName.split(GlobalConstant.FILE_REGEX_SPLIT);
+		String[] bits = fileName.split(GlobalConstants.FILE_REGEX_SPLIT);
 		return bits[bits.length - 1];
 	}
 }
