@@ -37,10 +37,5 @@ public class ConsumerConfig {
 	@Bean 
 	public Binding bindingGetProductByAccountId() {
 		return BindingBuilder.bind(queueGetProductByAccountId()).to(topic()).with(RabbitMQConstant.ROUTING_PRODUCT_GET_ALL_BY_ACCOUNT_ID);
-	}
-	
-	@Bean
-	public Consumer productConsumer() {
-		return new ProductConsumer();
-	}
+	}	
 }

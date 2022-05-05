@@ -10,7 +10,7 @@ import com.example.common.constants.GlobalConstant;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class StringUtil {
+public class StringUtils {
 	public static boolean isNullOrEmpty(String s) {
 		return s == null || s.isEmpty();
 	}
@@ -24,19 +24,19 @@ public class StringUtil {
 	}
 
 	public static String getQueueName(String... queueName) {
-		return StringUtil.concatStrings(GlobalConstant.DASH, queueName);
+		return StringUtils.concatStrings(GlobalConstant.DASH, queueName);
 	}
 
 	public static String getExchange(String serviceName, String exchange) {
-		return StringUtil.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, exchange);
+		return StringUtils.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, exchange);
 	}
 
 	public static String getAction(String... action) {
-		return StringUtil.concatStrings(GlobalConstant.DASH, action);
+		return StringUtils.concatStrings(GlobalConstant.DASH, action);
 	}
 
 	public static String getRoutingKey(String serviceName, String action, String charsAfter) {
-		return StringUtil.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, action,
+		return StringUtils.concatStrings(GlobalConstant.DOT, GlobalConstant.DEMO_STRING, serviceName, action,
 				charsAfter);
 	}
 

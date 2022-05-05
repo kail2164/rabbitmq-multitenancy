@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.common.constants.GlobalConstant;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
-import com.example.common.util.JwtUtil;
+import com.example.common.util.JwtUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TenantInterceptor implements HandlerInterceptor {
 	@Autowired
-	JwtUtil jwtUtil;
+	JwtUtils jwtUtil;
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {

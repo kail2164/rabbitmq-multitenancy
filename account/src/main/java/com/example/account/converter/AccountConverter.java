@@ -18,6 +18,7 @@ public class AccountConverter {
 	}
 	public static RegisterResponse convertToRegisterResponse(Account acc, String token) {
 		RegisterResponse response = new RegisterResponse();
+		response.setId(acc.getId());
 		response.setFirstName(acc.getFirstName());
 		response.setLastName(acc.getLastName());
 		response.setRole(acc.getRole());
@@ -35,6 +36,7 @@ public class AccountConverter {
 	
 	public static LoginResponse convertToLoginResponse(Account acc, String token) {
 		LoginResponse response = new LoginResponse();
+		response.setId(acc.getId());
 		response.setFirstName(acc.getFirstName());
 		response.setLastName(acc.getLastName());
 		response.setRole(acc.getRole());

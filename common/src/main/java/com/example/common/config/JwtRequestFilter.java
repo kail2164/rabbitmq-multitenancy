@@ -29,8 +29,8 @@ import com.example.common.constants.GlobalConstant;
 import com.example.common.constants.RabbitMQConstant;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
-import com.example.common.util.JwtUtil;
-import com.example.common.util.RabbitMQUtil;
+import com.example.common.util.JwtUtils;
+import com.example.common.util.RabbitMQUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,7 +40,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private JwtUtil jwtUtil;
+	private JwtUtils jwtUtil;
 	@Autowired
 	@Qualifier("handlerExceptionResolver")
 	private HandlerExceptionResolver resolver;
@@ -70,7 +70,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// Once we get the token validate it.
 			boolean authenticationIsNull = SecurityContextHolder.getContext().getAuthentication() == null;
 			if (username != null && authenticationIsNull) {
-				UserDetails userDetails = RabbitMQUtil.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
+				UserDetails userDetails = RabbitMQUtils.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
 						RabbitMQConstant.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
 				// if token is valid configure Spring Security to manually set
 				// authentication
@@ -104,7 +104,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 
 	private void callLogout(HttpServletRequest request, HttpServletResponse response, String jwtToken) throws CustomException {
-		RabbitMQUtil.send(RabbitMQConstant.TOPIC_ACCOUNT, RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT, jwtToken);
+		RabbitMQUtils.send(RabbitMQConstant.TOPIC_ACCOUNT, RabbitMQConstant.ROUTING_ACCOUNT_LOGOUT, jwtToken);
 		resolver.resolveException(request, response, null,
 				new CustomException(APIStatus.BAD_REQUEST, "JWT Token has been expired"));
 	}

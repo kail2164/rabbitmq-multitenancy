@@ -32,8 +32,11 @@ import com.example.product.model.Product;
 import com.example.product.publisher.AccountPublisher;
 import com.example.product.service.SchemaService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
-@DependsOn("rabbitMQUtil")
+@DependsOn("rabbitMQUtils")
+@Slf4j
 public class SchemaServiceImpl implements SchemaService, InitializingBean {
 	@Autowired
 	private DataSource dataSource;
@@ -45,15 +48,15 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 	ExecutorService singleThreadExecutor;
 
 	Logger logger = LoggerFactory.getLogger(SchemaServiceImpl.class);
+	Map<String, String> settings = new HashMap<>();
 
 	@Override
 	public void createSchema(String schema) {
 		Connection connection = null;
-		Map<String, String> settings = new HashMap<>();
 		try {
 			connection = dataSource.getConnection();
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			log.error("Error in createSchema: ", e1);
 		}
 		try {
 			connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
@@ -62,14 +65,13 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 			hibernateConfigSchema(schema, serviceRegistry, true);
 			connection.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("Error in createSchema: ", e);
 		}
 	}
 
 	@Override
 	public void afterPropertiesSet() {
 		try {
-			Map<String, String> settings = new HashMap<>();
 			settings.put(Environment.DRIVER, "org.postgresql.Driver");
 			settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 			settings.put(Environment.URL, env.getProperty("spring.datasource.url"));
@@ -90,7 +92,7 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 							existingSchema.add(rs.getString(1));
 						}
 						boolean isCreate = false;
-						for (String schema : schemas) {							
+						for (String schema : schemas) {
 							if (!existingSchema.contains(schema)) {
 								Connection connection = dataSource.getConnection();
 								connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
@@ -98,18 +100,19 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 								connection.close();
 							}
 							settings.put(Environment.DEFAULT_SCHEMA, schema);
-							ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(settings).build();
+							ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+									.applySettings(settings).build();
 							hibernateConfigSchema(schema, serviceRegistry, isCreate);
 							isCreate = false;
 						}
 					} catch (SQLException e) {
-						e.printStackTrace();
+						log.error("Error in afterPropertiesSet: ", e);
 					}
 				}
 			};
 			singleThreadExecutor.execute(runnable);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("Error in afterPropertiesSet: ", e);
 		}
 	}
 

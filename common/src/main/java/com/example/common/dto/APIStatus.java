@@ -1,11 +1,17 @@
 package com.example.common.dto;
 
+import java.io.Serializable;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-public class APIStatus {
+public class APIStatus implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -525166036842046676L;
 	public static final APIStatus OK = new APIStatus(200, "OK");
     public static final APIStatus INVALID_TOKEN = new APIStatus(201, "Invalid token, please login again");
     public static final APIStatus ACCEPTED = new APIStatus(202, "Accepted");

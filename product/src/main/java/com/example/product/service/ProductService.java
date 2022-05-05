@@ -9,7 +9,7 @@ import com.example.common.dto.response.ProductResponse;
 public interface ProductService {
 	List<ProductResponse> getProducts(int page, int maxRecords) throws CustomException;
 	ProductResponse create(ProductRequest request) throws CustomException;
-	ProductResponse update(ProductRequest request) throws CustomException;
+	ProductResponse update(ProductRequest request, boolean nullableUpdate) throws CustomException;
 	Long delete(Long id) throws CustomException;
 
 }

@@ -2,11 +2,11 @@ package com.example.common.validator;
 
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
-import com.example.common.util.StringUtil;
+import com.example.common.util.StringUtils;
 
 public class StringValidator {
 	public static void validateNotNull(String field, String err) throws CustomException {
-		if (StringUtil.isNullOrEmpty(field)) {
+		if (StringUtils.isNullOrEmpty(field)) {
 			throw new CustomException(APIStatus.BAD_REQUEST, err);
 		}
 	}

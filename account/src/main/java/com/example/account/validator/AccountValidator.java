@@ -2,7 +2,7 @@ package com.example.account.validator;
 
 import com.example.account.model.Account;
 import com.example.common.dto.CustomException;
-import com.example.common.util.StringUtil;
+import com.example.common.util.StringUtils;
 import com.example.common.validator.StringValidator;
 
 public class AccountValidator {

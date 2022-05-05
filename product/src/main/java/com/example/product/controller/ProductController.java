@@ -73,9 +73,10 @@ public class ProductController implements SecuredController {
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
 	public ResponseEntity<?> updateProduct(HttpServletRequest request,
+			@Parameter(allowEmptyValue = false, description = "Is able to update with null values", example = "false") @RequestParam(required = true) boolean nullableUpdate,
 			@Parameter(name = "ProductRequestDTO", description = "Product request object", required = true, allowEmptyValue = false) @RequestBody(required = true) ProductRequest product)
 			throws Exception {
-		return ResponseHelper.setSuccessResult(new APIResponse<ProductResponse>(productService.update(product)),
+		return ResponseHelper.setSuccessResult(new APIResponse<ProductResponse>(productService.update(product, nullableUpdate)),
 				request.getMethod());
 	}
 

@@ -17,35 +17,27 @@ import com.example.account.validator.PasswordValidator;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@Autowired
 	AccountRepository accountRepository;
-	@PostConstruct
-	private void createTest() throws CustomException {
-		Account acc = new Account();
-		acc.setFirstName("Test");
-		acc.setLastName("Admin");
-		acc.setPassword("12345678@Ab");
-		acc.setUsername("ad");
-		acc.setRole("admin");
-//		create(acc);
-	}
-	
+
 	@Override
 	public Account create(Account acc) throws CustomException {		
 		AccountValidator.validateAccount(acc);		
 		String password = acc.getPassword();
 		PasswordValidator.validatePassword(password);
 		acc.setPassword(passwordEncoder.encode(password));
-		try {
-			Account newAccount = accountRepository.save(acc);
-			newAccount.setPassword(null);
-			return newAccount;
+		try {			
+			return accountRepository.save(acc);
 		} catch (Exception e) {
+			log.error("Error in create: ", e);
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -66,6 +58,7 @@ public class AccountServiceImpl implements AccountService {
 			updatedAccount.setPassword(null);
 			return updatedAccount;
 		} catch (Exception e) {
+			log.error("Error in update: ", e);
 			throw new CustomException(e.getMessage());
 		}
 	}
@@ -80,6 +73,7 @@ public class AccountServiceImpl implements AccountService {
 			Account accountInDB = optAccount.get();
 			accountRepository.delete(accountInDB);
 		} catch (Exception e) {
+			log.error("Error in delete: ", e);
 			throw new CustomException(e.getMessage());
 		}
 	}

@@ -3,6 +3,8 @@ package com.example.account.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.example.account.converter.AccountConverter;
 import com.example.account.model.Account;
 import com.example.account.model.UserSession;
+import com.example.account.publisher.SchemaPublisher;
 import com.example.account.repository.AccountRepository;
 import com.example.account.repository.UserSessionRepository;
 import com.example.account.service.AccountService;
@@ -30,27 +33,31 @@ import com.example.common.dto.request.LoginRequest;
 import com.example.common.dto.request.RegisterRequest;
 import com.example.common.dto.response.LoginResponse;
 import com.example.common.dto.response.RegisterResponse;
-import com.example.common.util.JwtUtil;
+import com.example.common.util.JwtUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	AccountService accountService;
 	@Autowired
 	SessionService sessionService;
-	
+
 	@Autowired
 	AccountRepository accountRepository;
 	@Autowired
 	UserSessionRepository userSessionRepository;
-	
+
 	@Autowired
 	@Lazy
 	AuthenticationManager authenticationManager;
-	
 	@Autowired
-	JwtUtil jwtUtil;
-	
+	SchemaPublisher schemaPublisher;
+	@Autowired
+	JwtUtils jwtUtil;
+
 	@Override
 	public LoginResponse login(LoginRequest request) throws CustomException {
 		Account account = accountRepository.findByUsernameIgnoreCase(request.getUsername())
@@ -64,27 +71,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				authenticationManager.authenticate(
 						new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 			} catch (Exception e) {
-				throw new CustomException(APIStatus.BAD_REQUEST,
-						"Username or password is not correct!");
+				log.error("Error in login: ", e);
+				throw new CustomException(APIStatus.BAD_REQUEST, "Username or password is not correct!");
 			}
 		}
 		String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()), account.getId());
-		// Delete old token if exist
-		UserSession session = new UserSession();
-		session.setToken(token);
-		session.setAccount(account);
-		session.setExpireAt(jwtUtil.getExpirationDateFromToken(token));
-		sessionService.removeOldTokens(session);
-		userSessionRepository.save(session); // save session to DB
-		sessionService.setSession(token, session); // Save session into RAM
+		setSession(token, account);
 		return AccountConverter.convertToLoginResponse(account, token);
 	}
 
 	@Override
+	@Transactional(rollbackOn = Exception.class)
 	public RegisterResponse register(RegisterRequest request) throws CustomException {
-		Account account = AccountConverter.convertFromRegisterRequest(request);		
-		account = accountService.create(account);		
+		Account account = AccountConverter.convertFromRegisterRequest(request);
+		account = accountService.create(account);
 		String token = jwtUtil.generateToken(loadUserByUsername(request.getUsername()), account.getId());
+		setSession(token, account);
+		schemaPublisher.createNewSchema("account" + account.getId());
 		return AccountConverter.convertToRegisterResponse(account, token);
 	}
 
@@ -100,6 +103,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public void logout(String token) throws CustomException {
 		sessionService.removeToken(token);
+	}
+
+	private void setSession(String token, Account acc) {
+		UserSession session = new UserSession();
+		session.setToken(token);
+		session.setAccount(acc);
+		session.setExpireAt(jwtUtil.getExpirationDateFromToken(token));
+		// Delete old token if exist
+		sessionService.removeOldTokens(session);
+		userSessionRepository.save(session); // save session to DB
+		sessionService.setSession(token, session); // Save session into RAM
 	}
 
 }

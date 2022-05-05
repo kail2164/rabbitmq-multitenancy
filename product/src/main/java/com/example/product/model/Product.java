@@ -8,13 +8,15 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.example.common.dto.BaseEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity(name = "tbl_product")
 @Getter
 @Setter
-public class Product {
+public class Product extends BaseEntity{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

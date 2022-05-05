@@ -25,20 +25,20 @@ public class Account extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Size(min = 0, max = 255)
-	@Column(columnDefinition = "varchar(255) default ''", name = "first_name")
+	@Column(columnDefinition = "VARCHAR(255) DEFAULT ''", name = "first_name")
 	private String firstName;
 	@Size(min = 0, max = 255)
-	@Column(columnDefinition = "varchar(255) default ''", name = "last_name")
+	@Column(columnDefinition = "VARCHAR(255) DEFAULT ''", name = "last_name")
 	private String lastName;
 	@Size(min = 2, max = 255)
 	@NotNull
-	@Column(columnDefinition = "varchar(255) default ''",nullable = false, unique = true)
+	@Column(columnDefinition = "VARCHAR(255) DEFAULT ''",nullable = false, unique = true)
 	private String username;
 	@NotNull
-	@Column(columnDefinition = "varchar(500)",nullable = false)
+	@Column(columnDefinition = "VARCHAR(500)",nullable = false)
 	private String password;
 	@Size(min = 2, max = 255)
 	@NotNull
-	@Column(columnDefinition = "varchar(255) default ''",nullable = false)
+	@Column(columnDefinition = "VARCHAR(255) DEFAULT 'user'",nullable = false)
 	private String role;	
 }

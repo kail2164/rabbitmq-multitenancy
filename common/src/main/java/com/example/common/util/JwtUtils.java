@@ -25,7 +25,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public class JwtUtil implements Serializable {
+public class JwtUtils implements Serializable {
 
 	/**
 	 * 
@@ -72,7 +72,7 @@ public class JwtUtil implements Serializable {
 	}
 
 	public boolean isInvalid(String token) throws Exception {
-		boolean isValid = RabbitMQUtil.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
+		boolean isValid = RabbitMQUtils.sendAndReceive(RabbitMQConstant.TOPIC_ACCOUNT,
 				RabbitMQConstant.ROUTING_ACCOUNT_VALIDATE_TOKEN, token, Boolean.class);
 		if (!isValid) {
 			throw new CustomException(APIStatus.BAD_REQUEST, "Invalid token");

@@ -15,6 +15,8 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.dto.response.APIResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
@@ -32,7 +34,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		result.setError(e.getMessage());
 		result.setStatus(e.getStatus());
 		return ResponseHelper.setFailedResult(result, e.getStatus().getCode(), null);
-	}	
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException e,
 			HttpHeaders headers, HttpStatus status, final WebRequest request) {

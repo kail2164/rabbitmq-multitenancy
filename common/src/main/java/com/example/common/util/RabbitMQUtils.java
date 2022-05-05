@@ -19,14 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class RabbitMQUtil {
+public class RabbitMQUtils {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;	
 	private static RabbitTemplate rabbitTemplateStatic;	
 	
 	@PostConstruct
     public void init() {
-		RabbitMQUtil.rabbitTemplateStatic = rabbitTemplate;
+		RabbitMQUtils.rabbitTemplateStatic = rabbitTemplate;
     }
 	
 	public static <T extends Object> T sendAndReceive(String topic, String route, Object value, Class<T> clazz) throws CustomException {
@@ -50,7 +50,7 @@ public class RabbitMQUtil {
 	}
 	
 	public static void send(String topic, String route, Object value) throws CustomException{
-		callRabbitMQ(topic, route, value);
+		rabbitTemplateStatic.convertAndSend(topic, route, value);
 	}
 	
 	private static Object callRabbitMQ(String topic, String route, Object value) throws CustomException {
@@ -59,15 +59,14 @@ public class RabbitMQUtil {
 			if(Objects.nonNull(result) && result instanceof RemoteInvocationResult) {		
 				RemoteInvocationResult casted = RemoteInvocationResult.class.cast(result);
 				if(casted.hasException()) {
-					log.error(casted.getException().toString());
-					casted.getException().printStackTrace();
+					log.error("Error in callRabbitMQ: ", casted.getException());
 					throw new CustomException(APIStatus.BAD_REQUEST, casted.getException().getMessage());
 				}
 				return casted.getValue();
 			}
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error in callRabbitMQ: ", e);
 			throw new CustomException(APIStatus.BAD_REQUEST, e.getMessage());
 		}		
 	}
