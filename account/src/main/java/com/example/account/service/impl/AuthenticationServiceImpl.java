@@ -69,17 +69,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		Account account = accountRepository.findByUsernameIgnoreCase(request.getUsername())
 				.orElseThrow(() -> new CustomException(APIStatus.NOT_FOUND, "User account does not exist"));
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		boolean isAnonymous = authentication == null || authentication.getAuthorities().stream()
-				.anyMatch(r -> r.getAuthority().equals("ROLE_ANONYMOUS"));
-
-		if (isAnonymous) {
-			try {
-				authenticationManager.authenticate(
-						new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-			} catch (Exception e) {
-				log.error("Error in login: ", e);
-				throw new CustomException(APIStatus.BAD_REQUEST, "Username or password is not correct!");
+		if(authentication != null) {
+			boolean isAnonymous = authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ANONYMOUS"));
+			if (isAnonymous) {
+				try {
+					authenticationManager.authenticate(
+							new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+				} catch (Exception e) {
+					log.error("Error in login: ", e);
+					throw new CustomException(APIStatus.BAD_REQUEST, "Username or password is not correct!");
+				}
+			} else {
+				throw new CustomException(APIStatus.BAD_REQUEST, "The current session already authenticated");
 			}
+		} else {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Invalid session.");
 		}
 		String token = JwtUtils.generateToken(loadUserByUsername(request.getUsername()), account.getId());
 		setSession(token, account);
@@ -107,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public void logout(String token) throws CustomException {
+	public void logout(String token) {
 		sessionService.removeToken(token);
 	}
 
