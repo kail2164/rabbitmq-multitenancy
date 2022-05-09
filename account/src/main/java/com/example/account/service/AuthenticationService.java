@@ -12,5 +12,5 @@ import com.example.common.dto.response.RegisterResponse;
 public interface AuthenticationService extends UserDetailsService {
 	LoginResponse login(LoginRequest request) throws CustomException;
 	RegisterResponse register(RegisterRequest request) throws CustomException;
-	void logout(String token);
+	void logout(String token) throws CustomException;
 }

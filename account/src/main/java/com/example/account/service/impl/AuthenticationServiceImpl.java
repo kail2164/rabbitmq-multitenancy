@@ -111,11 +111,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public void logout(String token) {
+	public void logout(String token) throws CustomException {
 		sessionService.removeToken(token);
 	}
 
-	private void setSession(String token, Account acc) {
+	private void setSession(String token, Account acc) throws CustomException {
 		UserSession session = new UserSession();
 		session.setToken(token);
 		session.setAccount(acc);

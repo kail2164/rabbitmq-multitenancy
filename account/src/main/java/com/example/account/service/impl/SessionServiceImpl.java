@@ -28,7 +28,13 @@ public class SessionServiceImpl implements SessionService {
 	private static HashMap<String, UserSession> cacheHashMap = new HashMap<>();
 
 	@Override
-	public void setSession(String token, UserSession session) {
+	public void setSession(String token, UserSession session) throws CustomException{
+		if(session == null) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "User session cannot be null");
+		}
+		if(token == null) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Token cannot be null");
+		}
 		cacheHashMap.put(token, session);
 		userSessionRepository.save(session);
 	}
@@ -39,7 +45,10 @@ public class SessionServiceImpl implements SessionService {
 	}
 
 	@Override
-	public void removeOldTokens(UserSession session) {
+	public void removeOldTokens(UserSession session) throws CustomException{
+		if(session == null) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "User session cannot be null");
+		}
 		for(Entry<String, UserSession> entry : cacheHashMap.entrySet()) {
 			if(session.equals(entry.getValue())) {
 				removeToken(entry.getKey());
@@ -48,7 +57,10 @@ public class SessionServiceImpl implements SessionService {
 	}
 	
 	@Override
-	public void removeToken(String token) {
+	public void removeToken(String token) throws CustomException{
+		if(token == null) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Token cannot be null");
+		}
 		cacheHashMap.remove(token);
 		deleteOldToken(token);
 	}

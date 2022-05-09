@@ -13,7 +13,6 @@ import com.example.common.dto.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
 @Entity(name = "tbl_user_session")
 public class UserSession extends BaseEntity {

@@ -10,6 +10,8 @@ public interface TestConstants {
 	String INVALID_MIN_LENGTH_STR = "1";
 	String BLANK = "";
 	String PASSED = "passedstring";
+	String VALID_HASH = "1000:9c24a9c8776ffd8f39e8edb5712ee75a23b4e9b1fc927fd6:5f6ab794bc72326f540df4b4f76f8f9c26ae2eb2763e216d";
+	String VALID_PWD = "123456789";
 	Boolean NULLABLE_UPDATE_TRUE = true;
 	Boolean NULLABLE_UPDATE_FALSE = false;
 	Long ID = 1l;

@@ -25,7 +25,10 @@ public class AccountConsumer implements Consumer {
 
 	@RabbitListener(queues = "#{queueFetchAllSchemas.name}", returnExceptions = "true")
 	public RemoteInvocationResult queueFetchAllSchemas() throws Exception {
-		List<String> result = accountRepository.getAllAccountId().stream().map(data -> "account" + data).collect(Collectors.toList());
+		List<String> result = accountRepository.getAllAccountId()
+				.stream()
+				.map(data -> "account" + data)
+				.collect(Collectors.toList());
 		return new RemoteInvocationResult(result);
 	}
 }

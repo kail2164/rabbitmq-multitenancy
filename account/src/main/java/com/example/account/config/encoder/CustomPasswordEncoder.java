@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
+import com.example.common.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +58,7 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 	 * @return a salted PBKDF2 hash of the password
 	 */
 	public String createHash(String password) throws CustomException {
-		if(password == null || password.length() == 0) {
+		if(StringUtils.isNullOrEmpty(password)) {
 			throw new CustomException(APIStatus.BAD_REQUEST, "Password cannot be null");
 		}
 		return createHash(password.toCharArray());
@@ -97,6 +98,12 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 	 * @return true if the password is correct, false if not
 	 */
 	public boolean validatePassword(String password, String correctHash) throws CustomException {
+		if(StringUtils.isNullOrEmpty(password)) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Password cannot be null");
+		}
+		if(StringUtils.isNullOrEmpty(correctHash)) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Correct hash cannot be null");
+		}
 		return validatePassword(password.toCharArray(), correctHash);
 	}
 
