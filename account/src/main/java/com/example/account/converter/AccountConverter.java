@@ -26,13 +26,7 @@ public class AccountConverter {
 		response.setToken(token);
 		return response;
 	}
-	
-	public static Account convertFromLoginRequest(LoginRequest request) {
-		Account acc = new Account();
-		acc.setUsername(request.getUsername());
-		acc.setPassword(request.getPassword());
-		return acc;
-	}
+
 	
 	public static LoginResponse convertToLoginResponse(Account acc, String token) {
 		LoginResponse response = new LoginResponse();
