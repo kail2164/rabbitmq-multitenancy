@@ -20,6 +20,7 @@ import com.example.common.dto.request.RegisterRequest;
 import com.example.common.dto.response.APIResponse;
 import com.example.common.dto.response.LoginResponse;
 import com.example.common.dto.response.RegisterResponse;
+import com.example.common.dto.swagger.document.StringDocument;
 import com.example.common.dto.swagger.document.account.LoginDocument;
 import com.example.common.dto.swagger.document.account.RegisterDocument;
 import com.example.common.dto.swagger.document.response.ResponseError400;
@@ -39,6 +40,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationController {
 	private AuthenticationService authenticationService;
+
 	@Autowired
 	public AuthenticationController(AuthenticationService authenticationService) {
 		super();
@@ -50,8 +52,8 @@ public class AuthenticationController {
 	@ApiResponse(content = @Content(schema = @Schema(implementation = LoginDocument.class), mediaType = "application/json"), responseCode = "200", description = "OK")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
-	public ResponseEntity<?> createAuthenticationToken(HttpServletRequest request,
-			@Parameter(name = "LoginRequestDTO", description = "Login request object", required = true, allowEmptyValue = false) @RequestBody LoginRequest loginRequest)
+	public ResponseEntity<?> login(HttpServletRequest request,
+			@Parameter(description = "Login request object", required = true, allowEmptyValue = false) @RequestBody LoginRequest loginRequest)
 			throws CustomException {
 		return ResponseHelper.setSuccessResult(
 				new APIResponse<LoginResponse>(authenticationService.login(loginRequest)), request.getMethod());
@@ -59,13 +61,13 @@ public class AuthenticationController {
 
 	@GetMapping("/logout")
 	@Operation(description = "API used for logging out")
-	@ApiResponse(content = @Content(schema = @Schema(implementation = String.class)), responseCode = "200", description = "OK")
+	@ApiResponse(content = @Content(schema = @Schema(implementation = StringDocument.class)), responseCode = "200", description = "OK")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
-	public ResponseEntity<String> logout(@RequestParam(name = "token", required = true) String token)
-			throws CustomException {
+	public ResponseEntity<?> logout(HttpServletRequest request,
+			@Parameter(description = "Token to log out", required = true, allowEmptyValue = false) @RequestParam(required = true) String token) throws CustomException {
 		authenticationService.logout(token);
-		return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
+		return ResponseHelper.setSuccessResult(new APIResponse<String>("Logged out successfully"), request.getMethod());
 	}
 
 	@PostMapping("/register")
@@ -73,8 +75,8 @@ public class AuthenticationController {
 	@ApiResponse(content = @Content(schema = @Schema(implementation = RegisterDocument.class), mediaType = "application/json"), responseCode = "200", description = "OK")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
-	public ResponseEntity<?> createAccount(HttpServletRequest request,
-			@Parameter(name = "RegisterRequestDTO", description = "Register Request Object", required = true, allowEmptyValue = false) @RequestBody RegisterRequest registerRequest)
+	public ResponseEntity<?> register(HttpServletRequest request,
+			@Parameter(description = "Register Request Object", required = true, allowEmptyValue = false) @RequestBody RegisterRequest registerRequest)
 			throws CustomException {
 		return ResponseHelper.setSuccessResult(
 				new APIResponse<RegisterResponse>(authenticationService.register(registerRequest)),
