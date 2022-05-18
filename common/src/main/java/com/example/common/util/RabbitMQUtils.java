@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@NoArgsConstructor
 public class RabbitMQUtils {
 	private RabbitTemplate rabbitTemplate;
 	private static RabbitTemplate rabbitTemplateStatic;

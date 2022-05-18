@@ -13,8 +13,10 @@ import static org.mockito.Mockito.doReturn;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.account.model.UserSession;
@@ -23,7 +25,7 @@ import com.example.account.service.SessionService;
 import com.example.common.constants.TestConstants;
 import com.example.common.dto.CustomException;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class SessionServiceImplTest {
 	
 	@Mock

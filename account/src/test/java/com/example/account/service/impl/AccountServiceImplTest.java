@@ -15,8 +15,10 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +29,7 @@ import com.example.account.service.AccountService;
 import com.example.common.constants.TestConstants;
 import com.example.common.dto.CustomException;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
 	
 	@Mock
@@ -281,7 +283,6 @@ class AccountServiceImplTest {
 
 	@Test
 	void testDelete_FAIL_UnexpectedError() {
-		doThrow(new IllegalArgumentException("Error")).when(accountRepository).save(any(Account.class));
 		assertThrows(CustomException.class, () -> accountService.delete(TestConstants.ID));
 	}
 	

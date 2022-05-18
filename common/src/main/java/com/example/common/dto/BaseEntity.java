@@ -39,7 +39,6 @@ public class BaseEntity {
 		this.setCreateAt(now);
 		this.setModifiedAt(now);
 		setUserAudit(true);
-
 	}
 
 	@PreUpdate

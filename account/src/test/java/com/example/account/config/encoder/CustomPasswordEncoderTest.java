@@ -5,14 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.common.constants.TestConstants;
 import com.example.common.dto.CustomException;
 
 class CustomPasswordEncoderTest {
-
-	@InjectMocks
 	private CustomPasswordEncoder passwordEncoder = new CustomPasswordEncoder();
 
 	@Test

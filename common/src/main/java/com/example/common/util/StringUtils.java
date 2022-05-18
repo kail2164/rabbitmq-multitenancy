@@ -1,14 +1,6 @@
 package com.example.common.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.example.common.constants.GlobalConstants;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class StringUtils {
 	public static boolean isNullOrEmpty(String s) {
@@ -38,69 +30,7 @@ public class StringUtils {
 	public static String getRoutingKey(String serviceName, String action, String charsAfter) {
 		return StringUtils.concatStrings(GlobalConstants.DOT, GlobalConstants.DEMO_STRING, serviceName, action,
 				charsAfter);
-	}
-
-	public static String getJsonArrayStringFromList(List<String> strings) {
-		if (Objects.nonNull(strings) && !strings.isEmpty()) {
-			Gson gson = new Gson();
-			return gson.toJson(strings);
-		} else {
-			return GlobalConstants.EMPTY_ARRAY_STRING;
-		}
-	}
-
-	public static List<String> getListStringFromString(String json) {
-		// try if the string is json format
-		List<String> result = new ArrayList<>();
-		try {
-			if (json != null) {
-				Gson gson = new Gson();
-				result = Arrays.asList(gson.fromJson(json.trim(), String[].class));
-			}
-		} catch (Exception e) {
-			// not a json format
-			if (json.contains(",")) {
-				result = Arrays.asList(json.trim().split(","));
-			} else if (json.contains("===")) {
-				result = Arrays.asList(json.trim().split("==="));
-			} else {
-				result = Arrays.asList(json.trim());
-			}
-		}
-		return result.stream().filter(data -> !data.isEmpty()).map(String::trim).collect(Collectors.toList());
-	}
-
-	public static String getJsonArrayStringFromString(String string) {
-		return getJsonArrayStringFromList(getListStringFromString(string));
-	}
-
-	public static String getJsonStringFromObject(Object object) {
-		if (Objects.nonNull(object)) {
-			Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-			return gson.toJson(object);
-		}
-		return "";
-	}
-
-	public static String getJsonArrayStringFromObject(Object object) {
-		if (Objects.nonNull(object)) {
-			Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-			return gson.toJson(object);
-		}
-		return GlobalConstants.EMPTY_ARRAY_STRING;
-	}
-
-	public static String getJsonArrayStringFromListObjects(List<Object> objects) {
-		if (!objects.isEmpty()) {
-			Gson gson = new Gson();
-			return gson.toJson(objects);
-		}
-		return GlobalConstants.EMPTY_ARRAY_STRING;
-	}
-
-	public static String[] convertToLowerCaseStringArrayFromList(List<String> list) {
-		return list.stream().map(String::toLowerCase).collect(Collectors.toList()).toArray(String[]::new);
-	}
+	}	
 
 	public static String removeBearer(String token) {
 		if (token != null && token.startsWith("Bearer ")) {

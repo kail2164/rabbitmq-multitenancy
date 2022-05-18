@@ -31,6 +31,7 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 import com.example.common.util.JwtUtils;
 import com.example.common.util.RabbitMQUtils;
+import com.example.common.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -65,7 +66,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			final String requestTokenHeader = request.getHeader("Authorization");
 			// JWT Token is in the form "Bearer token". Remove Bearer word and get
 			// only the Token
-			String jwtToken = requestTokenHeader.substring(7);
+			String jwtToken = StringUtils.removeBearer(requestTokenHeader);
 			if (JwtUtils.isInvalid(jwtToken)) {
 				callLogout(request, response, jwtToken);
 				return;

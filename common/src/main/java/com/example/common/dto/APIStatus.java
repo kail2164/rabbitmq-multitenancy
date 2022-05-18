@@ -32,28 +32,10 @@ public class APIStatus implements Serializable {
     @Schema(example = "OK")
     private String status;
 
-    public APIStatus() {
-        this.code = OK.code;
-        this.status = OK.status;
-    }
-
     public APIStatus(int code, String status) {
         this.code = code;
         this.status = status;
-    }
-    
-    public APIStatus(APIStatus serviceStatus) {
-    	this.code = serviceStatus.getCode();
-    	this.status = serviceStatus.getStatus();
-    }
-
-    public APIStatus(APIStatus serviceStatus, String message) {
-        this.code = serviceStatus.getCode();
-        this.status = serviceStatus.getStatus();
-        if (message != null && !message.trim().isEmpty()) {
-            this.status = message;
-        }
-    }
+    }    
 
     public void setStatus(String status) {
         this.status = status;
@@ -61,14 +43,6 @@ public class APIStatus implements Serializable {
 
     public void setCode(int code) {
         this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
 }

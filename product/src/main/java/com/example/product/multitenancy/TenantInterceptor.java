@@ -19,20 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @NoArgsConstructor
-public class TenantInterceptor implements HandlerInterceptor {
-
-	private JwtUtils jwtUtil;
-
-	@Autowired
-	public TenantInterceptor(JwtUtils jwtUtil) {
-		super();
-		this.jwtUtil = jwtUtil;
-	}
+public class TenantInterceptor implements HandlerInterceptor {	
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String accountId = req.getHeader(GlobalConstants.X_ACCOUNT_ID);
-		if (!jwtUtil.isInWhiteList(req.getRequestURI())) {
+		if (!JwtUtils.isInWhiteList(req.getRequestURI())) {
 			if (ObjectUtils.isEmpty(accountId) || accountId.equals("0") || accountId.equals("null")) {
 				throw new CustomException(APIStatus.INVALID_TOKEN, "Invalid token");
 			} else {
