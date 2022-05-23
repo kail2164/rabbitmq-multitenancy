@@ -21,9 +21,6 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -32,36 +29,43 @@ import com.example.product.model.Product;
 import com.example.product.publisher.AccountPublisher;
 import com.example.product.service.SchemaService;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @DependsOn("rabbitMQUtils")
 @Slf4j
-public class SchemaServiceImpl implements SchemaService, InitializingBean {
+@NoArgsConstructor
+public class SchemaServiceImpl implements SchemaService {
 	private DataSource dataSource;
 	private AccountPublisher accountPublisher;
 	private org.springframework.core.env.Environment env;
 	private ExecutorService singleThreadExecutor;
 	private Map<String, String> settings = new HashMap<>();
+	private Connection connection;
+	private SchemaExport schemaExport;
+	private SchemaUpdate schemaUpdate;
 
 	@Autowired
 	public SchemaServiceImpl(DataSource dataSource, AccountPublisher accountPublisher,
-			org.springframework.core.env.Environment env, ExecutorService singleThreadExecutor) {
+			org.springframework.core.env.Environment env, ExecutorService singleThreadExecutor,
+			SchemaExport schemaExport, SchemaUpdate schemaUpdate) {
 		super();
 		this.dataSource = dataSource;
 		this.accountPublisher = accountPublisher;
 		this.env = env;
 		this.singleThreadExecutor = singleThreadExecutor;
+		this.schemaExport = schemaExport;
+		this.schemaUpdate = schemaUpdate;
+		try {
+			this.connection = dataSource.getConnection();
+		} catch (SQLException e) {
+			log.error("Error in createSchema: ", e);
+		}
 	}
 
 	@Override
 	public void createSchema(String schema) {
-		Connection connection = null;
-		try {
-			connection = dataSource.getConnection();
-		} catch (SQLException e1) {
-			log.error("Error in createSchema: ", e1);
-		}
 		try {
 			connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
 			settings.put(Environment.DEFAULT_SCHEMA, schema);
@@ -98,7 +102,6 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 						boolean isCreate = false;
 						for (String schema : schemas) {
 							if (!existingSchema.contains(schema)) {
-								Connection connection = dataSource.getConnection();
 								connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
 								isCreate = true;
 								connection.close();
@@ -120,15 +123,13 @@ public class SchemaServiceImpl implements SchemaService, InitializingBean {
 		}
 	}
 
-	private void hibernateConfigSchema(String schema, ServiceRegistry serviceRegistry, boolean isCreate) {
+	public void hibernateConfigSchema(String schema, ServiceRegistry serviceRegistry, boolean isCreate) {
 		MetadataSources metadata = new MetadataSources(serviceRegistry);
 		metadata.addAnnotatedClass(Product.class);
 		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
 		if (isCreate) {
-			SchemaExport schemaExport = new SchemaExport();
 			schemaExport.execute(enumSet, Action.CREATE, metadata.buildMetadata());
 		} else {
-			SchemaUpdate schemaUpdate = new SchemaUpdate();
 			schemaUpdate.execute(enumSet, metadata.buildMetadata());
 		}
 	}

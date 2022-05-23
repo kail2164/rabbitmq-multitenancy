@@ -55,9 +55,15 @@ public class ProductServiceImpl implements ProductService {
 	public ProductResponse update(ProductRequest request, boolean nullableUpdate) throws CustomException {
 		Product product = ProductConverter.convertFromRequest(request);
 		ProductValidator.validateProduct(product, false);
-		try {
-			Product productDB = productRepository.getById(request.getId());
-			productDB = update(product, productDB, nullableUpdate);
+		if(request.getId() == null) {
+			throw new CustomException(APIStatus.NOT_FOUND, "Product id cannot be null");
+		}
+		Product productDB = productRepository.getById(request.getId());
+		if(productDB == null) {
+			throw new CustomException(APIStatus.NOT_FOUND, "Not found product by id: " + request.getId());
+		}
+		productDB = update(product, productDB, nullableUpdate);
+		try {			
 			productDB = productRepository.save(product);
 			return ProductConverter.convertToResponse(productDB);
 		} catch (Exception e) {
@@ -68,13 +74,11 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Long delete(Long id) throws CustomException {
-		try {
-			productRepository.deleteById(id);
-			return id;
-		} catch (Exception e) {
-			log.error("Error in delete: ", e);
-			throw new CustomException(APIStatus.BAD_REQUEST, e.getMessage());
+		if(id == null) {
+			throw new CustomException(APIStatus.NOT_FOUND, "Product id cannot be null");
 		}
+		productRepository.deleteById(id);
+		return id;		
 	}
 
 	private Product update(Product newProduct, Product productToUpdate, boolean nullableUpdate) throws CustomException {

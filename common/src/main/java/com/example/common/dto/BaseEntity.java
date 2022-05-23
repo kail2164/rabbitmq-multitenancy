@@ -3,12 +3,10 @@ package com.example.common.dto;
 import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +16,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public class BaseEntity {
 	@Column(name = "create_at", insertable = true, updatable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE")

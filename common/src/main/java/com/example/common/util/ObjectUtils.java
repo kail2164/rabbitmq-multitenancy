@@ -12,14 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ObjectUtils {
 
-	public static boolean checkFieldEquals(Object newObject, Object objectToUpdate, String fieldName)
+	public static boolean checkFieldEquals(Object newObject, Object oldObject, String fieldName)
 			throws CustomException {
 		try {
 			Object unproxiedNew = Hibernate.unproxy(newObject);
-			Object unproxiedToUpdate = Hibernate.unproxy(newObject);
+			Object unproxiedOld = Hibernate.unproxy(oldObject);
 			Field field = unproxiedNew.getClass().getDeclaredField(fieldName);
 			field.setAccessible(true);
-			return field.get(unproxiedNew).equals(field.get(unproxiedToUpdate));
+			Object newValue= field.get(unproxiedNew);
+			Object oldValue = field.get(unproxiedOld);
+			if(newValue != null && oldValue != null) {
+				return newValue.equals(oldValue);
+			} else if(newValue == null && oldValue == null) {
+				return true;
+			}
+			return false;			
 		} catch (Exception e) {
 			log.error("Error in checkFieldEquals: ", e);
 			throw new CustomException(APIStatus.BAD_REQUEST, e.getMessage());
@@ -51,13 +58,13 @@ public class ObjectUtils {
 	}
 	
 
-	public static Object setFieldValue(Object newObject, Object objectToUpdate, String fieldName, boolean nullableUpdate)
+	public static Object setFieldValue(Object newObject, Object oldObject, String fieldName, boolean nullableUpdate)
 			throws CustomException {
-		if (nullableUpdate || !ObjectUtils.checkFieldEquals(newObject, objectToUpdate, fieldName)) {
-			Object valueToUpdate = ObjectUtils.getFieldValue(newObject, fieldName);
-			ObjectUtils.setFieldValue(objectToUpdate, fieldName, valueToUpdate);
+		Object valueToUpdate = ObjectUtils.getFieldValue(newObject, fieldName);
+		if (nullableUpdate || (!ObjectUtils.checkFieldEquals(newObject, oldObject, fieldName) && valueToUpdate != null)) {
+			ObjectUtils.setFieldValue(oldObject, fieldName, valueToUpdate);
 		}
-		return objectToUpdate;
+		return oldObject;
 	}
 
 }

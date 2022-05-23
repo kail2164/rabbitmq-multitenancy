@@ -1,0 +1,31 @@
+server:
+  port: 8082
+  tomcat:
+    connection-timeout: 900s
+  error:
+    include-stacktrace: ON_PARAM
+spring: 
+  liquibase:
+    enabled: false
+  application:
+    name: product-service    
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_product
+    username: ad
+    password: 12345678!Ad
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update     
+  rabbitmq:
+    host: host.docker.internal 
+    username: ad
+    password: 12345678!Ad
+    port: 5672
+springdoc:
+   swagger-ui:
+      path: /api/docs/swagger-ui.html
