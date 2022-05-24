@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
+import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
@@ -62,6 +63,7 @@ public class SchemaServiceImpl implements SchemaService {
 		} catch (SQLException e) {
 			log.error("Error in createSchema: ", e);
 		}
+
 	}
 
 	@Override
@@ -85,52 +87,58 @@ public class SchemaServiceImpl implements SchemaService {
 			settings.put(Environment.URL, env.getProperty("spring.datasource.url"));
 			settings.put(Environment.USER, env.getProperty("spring.datasource.username"));
 			settings.put(Environment.PASS, env.getProperty("spring.datasource.password"));
+			System.out.println(settings);
+			System.out.println(env.getProperty("spring.datasource.url"));
 			List<String> schemas = accountPublisher.fetchAllSchemas();
 			if (schemas == null) {
 				return;
 			}
-			Runnable runnable = new Runnable() {
-				@Override
-				public void run() {
-					try {
-						List<String> existingSchema = new ArrayList<>();
-						DatabaseMetaData md = dataSource.getConnection().getMetaData();
-						ResultSet rs = md.getSchemas();
-						while (rs.next()) {
-							existingSchema.add(rs.getString(1));
-						}
-						boolean isCreate = false;
-						for (String schema : schemas) {
-							if (!existingSchema.contains(schema)) {
-								connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
-								isCreate = true;
-								connection.close();
-							}
-							settings.put(Environment.DEFAULT_SCHEMA, schema);
-							ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-									.applySettings(settings).build();
-							hibernateConfigSchema(schema, serviceRegistry, isCreate);
-							isCreate = false;
-						}
-					} catch (SQLException e) {
-						log.error("Error in afterPropertiesSet: ", e);
-					}
-				}
-			};
-			singleThreadExecutor.execute(runnable);
+			singleThreadExecutor.execute(createSchema(schemas));
 		} catch (Throwable e) {
 			log.error("Error in afterPropertiesSet: ", e);
 		}
 	}
 
-	public void hibernateConfigSchema(String schema, ServiceRegistry serviceRegistry, boolean isCreate) {
-		MetadataSources metadata = new MetadataSources(serviceRegistry);
-		metadata.addAnnotatedClass(Product.class);
+	private Runnable createSchema(List<String> schemas) {
+		return new Runnable() {
+			@Override
+			public void run() {
+				try {
+					List<String> existingSchema = new ArrayList<>();
+					DatabaseMetaData md = dataSource.getConnection().getMetaData();
+					ResultSet rs = md.getSchemas();
+					while (rs.next()) {
+						existingSchema.add(rs.getString(1));
+					}
+					boolean isCreate = false;
+					for (String schema : schemas) {
+						if (!existingSchema.contains(schema)) {
+							connection.createStatement().execute("CREATE SCHEMA " + schema + ";");
+							isCreate = true;
+							connection.close();
+						}
+						settings.put(Environment.DEFAULT_SCHEMA, schema);
+						ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(settings)
+								.build();
+						hibernateConfigSchema(schema, serviceRegistry, isCreate);
+						isCreate = false;
+					}
+				} catch (SQLException e) {
+					log.error("Error in afterPropertiesSet: ", e);
+				}
+			}
+		};
+	}
+
+	private void hibernateConfigSchema(String schema, ServiceRegistry serviceRegistry, boolean isCreate) {
+		MetadataSources metadataSources = new MetadataSources(serviceRegistry);
+		metadataSources.addAnnotatedClass(Product.class);
 		EnumSet<TargetType> enumSet = EnumSet.of(TargetType.DATABASE);
+		Metadata metadata =  metadataSources.buildMetadata();
 		if (isCreate) {
-			schemaExport.execute(enumSet, Action.CREATE, metadata.buildMetadata());
+			schemaExport.execute(enumSet, Action.CREATE, metadata);
 		} else {
-			schemaUpdate.execute(enumSet, metadata.buildMetadata());
+			schemaUpdate.execute(enumSet, metadata);
 		}
 	}
 }
