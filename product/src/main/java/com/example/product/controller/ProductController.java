@@ -44,7 +44,6 @@ public class ProductController implements SecuredController {
 
 	@Autowired
 	public ProductController(ProductService productService) {
-		super();
 		this.productService = productService;
 	}
 
@@ -57,8 +56,10 @@ public class ProductController implements SecuredController {
 			@Parameter(allowEmptyValue = false, description = "Page number, starts from 1", example = "1") @RequestParam(required = true) int page,
 			@Parameter(allowEmptyValue = false, description = "Records per page", example = "20") @RequestParam(required = true) int maxRecords)
 			throws Exception {
+		List<ProductResponse> response = productService.getProducts(page, maxRecords);
+		System.out.println(response.get(0).getName());
 		return ResponseHelper.setSuccessResult(
-				new APIResponse<List<ProductResponse>>(productService.getProducts(page, maxRecords)),
+				new APIResponse<List<ProductResponse>>(response),
 				request.getMethod());
 	}
 
@@ -92,7 +93,7 @@ public class ProductController implements SecuredController {
 	@ApiResponse(content = @Content(schema = @Schema(implementation = LongDocument.class), mediaType = "application/json"), responseCode = "200", description = "OK")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError400.class), mediaType = "application/json"), responseCode = "400", description = "Bad Request")
 	@ApiResponse(content = @Content(schema = @Schema(implementation = ResponseError500.class), mediaType = "application/json"), responseCode = "500", description = "Internal Server Error")
-	public ResponseEntity<?> updateProduct(HttpServletRequest request,
+	public ResponseEntity<?> deleteProduct(HttpServletRequest request,
 			@Parameter(allowEmptyValue = false, description = "ID to delete", example = "1") @RequestParam(required = true) Long id)
 			throws Exception {
 		return ResponseHelper.setSuccessResult(new APIResponse<Long>(productService.delete(id)), request.getMethod());

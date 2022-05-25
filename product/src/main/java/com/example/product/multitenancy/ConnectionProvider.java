@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import lombok.NoArgsConstructor;
 
 @Component
-@NoArgsConstructor
 public class ConnectionProvider implements MultiTenantConnectionProvider {
 
 	/**
@@ -24,7 +23,6 @@ public class ConnectionProvider implements MultiTenantConnectionProvider {
 
 	@Autowired
 	public ConnectionProvider(DataSource dataSource) {
-		super();
 		this.dataSource = dataSource;
 	}
 

@@ -43,7 +43,6 @@ public class AuthenticationController {
 
 	@Autowired
 	public AuthenticationController(AuthenticationService authenticationService) {
-		super();
 		this.authenticationService = authenticationService;
 	}
 

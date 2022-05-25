@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +17,17 @@ import com.example.common.dto.CustomException;
 
 import javax.annotation.PostConstruct;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@DependsOn("rabbitMQConfig")
 public class RabbitMQUtils {
 	private RabbitTemplate rabbitTemplate;
 	private static RabbitTemplate rabbitTemplateStatic;
 
 	@Autowired
 	public RabbitMQUtils(RabbitTemplate rabbitTemplate) {
-		super();
 		this.rabbitTemplate = rabbitTemplate;
 	}
 

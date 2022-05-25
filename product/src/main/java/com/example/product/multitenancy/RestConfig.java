@@ -9,13 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import lombok.NoArgsConstructor;
 
 @Configuration
-@NoArgsConstructor
 public class RestConfig implements WebMvcConfigurer {
 	private HandlerInterceptor tenantInterceptor;
 
 	@Autowired
 	public RestConfig(HandlerInterceptor tenantInterceptor) {
-		super();
 		this.tenantInterceptor = tenantInterceptor;
 	}
 

@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,23 +17,22 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import lombok.NoArgsConstructor;
+@Configuration
+public class RabbitMQConfig {
 
-@NoArgsConstructor
-public class RabbitMQConfig {	
-	private SimpleRabbitListenerContainerFactory simpleContainer;
-
-	@Autowired
-	public RabbitMQConfig(SimpleRabbitListenerContainerFactory simpleContainer) {
-		super();
-		this.simpleContainer = simpleContainer;
+	@Bean(name = "rabbitListenerContainerFactory")
+	public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(
+			SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setDefaultRequeueRejected(false);
+		configurer.configure(factory, connectionFactory);
+		return factory;
 	}
 
 	@Bean
 	public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
 		final var rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setMessageConverter(producerJackson2MessageConverter());
-		simpleContainer.setDefaultRequeueRejected(false);
 		return rabbitTemplate;
 	}
 

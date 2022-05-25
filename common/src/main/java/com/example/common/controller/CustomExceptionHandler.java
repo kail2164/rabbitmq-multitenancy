@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -87,6 +88,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException e,
 			HttpHeaders headers, HttpStatus status, final WebRequest request) {
+		APIResponse<String> result = new APIResponse<String>();
+		result.setError(e.getMessage());
+		result.setStatus(APIStatus.BAD_REQUEST);
+		return new ResponseEntity<Object>(result, status);
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException e,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		APIResponse<String> result = new APIResponse<String>();
 		result.setError(e.getMessage());
 		result.setStatus(APIStatus.BAD_REQUEST);

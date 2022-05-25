@@ -5,20 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Schema
 @Getter
+@NoArgsConstructor
 public class APIResponse<S>{
 
 	private APIStatus status;
     private S result;
     private String error;
-    public APIResponse(){
-    }
-    
-    public String getError() {
-		return error;
-	}
   
 	public void setError(String error) {
 		this.error = error;
@@ -33,16 +29,8 @@ public class APIResponse<S>{
         this.status = status;
     }
 
-    public APIStatus getStatus() {
-        return status;
-    }
-
     public void setStatus(APIStatus status) {
         this.status = status;
-    }
-
-    public S getResult() {
-        return result;
     }
 
     public void setResult(S result) {

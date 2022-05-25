@@ -16,6 +16,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -23,6 +25,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 @Configuration
+@DependsOn({"currentTenantIdentifier", "connectionProvider"})
 @EnableJpaRepositories(basePackages = {
 		"com.example.product.repository" }, entityManagerFactoryRef = "tenantEntityManagerFactory", transactionManagerRef = "tenantTransactionManager")
 public class TenantPersistentConfig {
@@ -33,7 +36,6 @@ public class TenantPersistentConfig {
 	@Autowired
 	public TenantPersistentConfig(JpaProperties jpaProperties, ConfigurableListableBeanFactory beanFactory,
 			org.springframework.core.env.Environment env) {
-		super();
 		this.jpaProperties = jpaProperties;
 		this.beanFactory = beanFactory;
 		this.env = env;

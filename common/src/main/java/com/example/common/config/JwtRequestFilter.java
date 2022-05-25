@@ -39,7 +39,6 @@ import lombok.NoArgsConstructor;
 
 @Primary
 @Component
-@NoArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 	private HandlerExceptionResolver resolver;
 

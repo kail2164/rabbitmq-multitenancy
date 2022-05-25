@@ -86,9 +86,7 @@ public class SchemaServiceImpl implements SchemaService {
 			settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
 			settings.put(Environment.URL, env.getProperty("spring.datasource.url"));
 			settings.put(Environment.USER, env.getProperty("spring.datasource.username"));
-			settings.put(Environment.PASS, env.getProperty("spring.datasource.password"));
-			System.out.println(settings);
-			System.out.println(env.getProperty("spring.datasource.url"));
+			settings.put(Environment.PASS, env.getProperty("spring.datasource.password"));			
 			List<String> schemas = accountPublisher.fetchAllSchemas();
 			if (schemas == null) {
 				return;

@@ -7,12 +7,12 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import com.example.common.constants.RabbitMQConstants;
-import com.example.common.rabbitmq.Consumer;
-import com.example.product.consumer.ProductConsumer;
 
 @Configuration
+@DependsOn("rabbitMQUtils")
 public class ConsumerConfig {
 	@Bean
 	public TopicExchange topic() {
