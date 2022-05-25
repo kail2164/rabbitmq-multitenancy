@@ -56,10 +56,8 @@ public class ProductController implements SecuredController {
 			@Parameter(allowEmptyValue = false, description = "Page number, starts from 1", example = "1") @RequestParam(required = true) int page,
 			@Parameter(allowEmptyValue = false, description = "Records per page", example = "20") @RequestParam(required = true) int maxRecords)
 			throws Exception {
-		List<ProductResponse> response = productService.getProducts(page, maxRecords);
-		System.out.println(response.get(0).getName());
 		return ResponseHelper.setSuccessResult(
-				new APIResponse<List<ProductResponse>>(response),
+				new APIResponse<List<ProductResponse>>(productService.getProducts(page, maxRecords)),
 				request.getMethod());
 	}
 

@@ -44,7 +44,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Autowired
 	public JwtRequestFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
-		super();
 		this.resolver = resolver;
 	}
 
