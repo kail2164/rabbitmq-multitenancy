@@ -30,13 +30,12 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory) {
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 		final var rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setMessageConverter(producerJackson2MessageConverter());
 		return rabbitTemplate;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Bean
 	public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
 		ObjectMapper objectMapper = new ObjectMapper();

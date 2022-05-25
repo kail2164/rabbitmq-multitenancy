@@ -7,10 +7,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.account.consumer.AccountConsumer;
-import com.example.account.consumer.SessionConsumer;
 import com.example.common.constants.RabbitMQConstants;
-import com.example.common.rabbitmq.Consumer;
 
 @Configuration
 public class ConsumerConfig {

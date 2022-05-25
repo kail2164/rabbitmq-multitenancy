@@ -24,7 +24,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-@Component
 public class JwtUtils implements Serializable {
 
 	/**
@@ -72,8 +71,8 @@ public class JwtUtils implements Serializable {
 				|| request.getHeader(GlobalConstants.X_ACCOUNT_ID).isEmpty();
 	}
 
-	public static boolean isInvalid(String token) throws Exception {
-		boolean isValid = RabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+	public static boolean isInvalid(String token, RabbitMQUtils rabbitMQUtils) throws Exception {
+		boolean isValid = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
 				RabbitMQConstants.ROUTING_ACCOUNT_VALIDATE_TOKEN, token, Boolean.class);
 		if (!isValid) {
 			throw new CustomException(APIStatus.BAD_REQUEST, "Invalid token");

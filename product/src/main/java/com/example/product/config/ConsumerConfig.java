@@ -12,7 +12,6 @@ import org.springframework.context.annotation.DependsOn;
 import com.example.common.constants.RabbitMQConstants;
 
 @Configuration
-@DependsOn("rabbitMQUtils")
 public class ConsumerConfig {
 	@Bean
 	public TopicExchange topic() {

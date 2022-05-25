@@ -37,14 +37,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.NoArgsConstructor;
 
-@Primary
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 	private HandlerExceptionResolver resolver;
+	private RabbitMQUtils rabbitMQUtils;
 
-	@Autowired
-	public JwtRequestFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+	public JwtRequestFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, RabbitMQUtils rabbitMQUtils) {
 		this.resolver = resolver;
+		this.rabbitMQUtils = rabbitMQUtils;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and get
 			// only the Token
 			String jwtToken = StringUtils.removeBearer(requestTokenHeader);
-			if (JwtUtils.isInvalid(jwtToken)) {
+			if (JwtUtils.isInvalid(jwtToken, rabbitMQUtils)) {
 				callLogout(request, response, jwtToken);
 				return;
 			}
@@ -73,7 +73,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// Once we get the token validate it.
 			boolean authenticationIsNull = SecurityContextHolder.getContext().getAuthentication() == null;
 			if (username != null && authenticationIsNull) {
-				UserDetails userDetails = RabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+				UserDetails userDetails = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
 						RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
 				// if token is valid configure Spring Security to manually set
 				// authentication
@@ -107,7 +107,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private void callLogout(HttpServletRequest request, HttpServletResponse response, String jwtToken)
 			throws CustomException {
-		RabbitMQUtils.send(RabbitMQConstants.TOPIC_ACCOUNT, RabbitMQConstants.ROUTING_ACCOUNT_LOGOUT, jwtToken);
+		rabbitMQUtils.send(RabbitMQConstants.TOPIC_ACCOUNT, RabbitMQConstants.ROUTING_ACCOUNT_LOGOUT, jwtToken);
 		resolver.resolveException(request, response, null,
 				new CustomException(APIStatus.BAD_REQUEST, "JWT Token has been expired"));
 	}
@@ -129,7 +129,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		public ModifiedRequest(HttpServletRequest request) {
 			super(request);
-
 		}
 
 		public void addHeader(String name, String value) {

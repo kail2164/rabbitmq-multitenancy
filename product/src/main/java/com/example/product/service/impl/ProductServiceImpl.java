@@ -2,7 +2,6 @@ package com.example.product.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductServiceImpl implements ProductService {
 	private ProductRepository productRepository;
 
-	@Autowired
 	public ProductServiceImpl(ProductRepository productRepository) {
 		this.productRepository = productRepository;
 	}

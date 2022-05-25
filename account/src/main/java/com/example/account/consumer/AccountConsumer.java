@@ -9,13 +9,12 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.stereotype.Component;
 
 import com.example.account.repository.AccountRepository;
-import com.example.common.rabbitmq.Consumer;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Component
-public class AccountConsumer implements Consumer {
+public class AccountConsumer {
 	private AccountRepository accountRepository;
 	
 	@Autowired

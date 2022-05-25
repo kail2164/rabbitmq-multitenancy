@@ -33,8 +33,8 @@ import com.example.product.model.Product;
 import com.example.product.repository.ProductRepository;
 import com.example.product.service.ProductService;
 
-//@ExtendWith(MockitoExtension.class)
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+//@SpringBootTest
 class ProductServiceImplTest {	
 	
 	@InjectMocks

@@ -7,13 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.example.account.service.AuthenticationService;
 import com.example.account.service.SessionService;
-import com.example.common.rabbitmq.Consumer;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Component
-public class SessionConsumer implements Consumer{
+public class SessionConsumer {
 	private SessionService sessionService;
 	private AuthenticationService authenticationService;
 	

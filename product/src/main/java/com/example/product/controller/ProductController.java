@@ -42,7 +42,6 @@ import lombok.NoArgsConstructor;
 public class ProductController implements SecuredController {
 	private ProductService productService;
 
-	@Autowired
 	public ProductController(ProductService productService) {
 		this.productService = productService;
 	}

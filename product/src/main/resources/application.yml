@@ -2,8 +2,6 @@ server:
   port: 8082
   tomcat:
     connection-timeout: 900s
-  error:
-    include-stacktrace: ON_PARAM
 spring: 
   liquibase:
     enabled: false
