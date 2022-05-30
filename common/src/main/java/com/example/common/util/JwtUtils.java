@@ -72,9 +72,9 @@ public class JwtUtils implements Serializable {
 	}
 
 	public static boolean isInvalid(String token, RabbitMQUtils rabbitMQUtils) throws Exception {
-		boolean isValid = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+		Boolean isValid = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
 				RabbitMQConstants.ROUTING_ACCOUNT_VALIDATE_TOKEN, token, Boolean.class);
-		if (!isValid) {
+		if (isValid == null || !isValid) {
 			throw new CustomException(APIStatus.BAD_REQUEST, "Invalid token");
 		}
 		return isTokenExpired(token);

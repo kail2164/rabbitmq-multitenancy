@@ -33,7 +33,7 @@ class SessionConsumerTest {
 	@Mock
 	private AuthenticationService authenticationService;
 	@InjectMocks
-	private SessionConsumer sessionConsumer = new SessionConsumer();
+	private SessionConsumer sessionConsumer = new SessionConsumer(sessionService, authenticationService);
 
 	@Test
 	void testValidateToken_FAIL_SessionServiceThrewException() throws CustomException {

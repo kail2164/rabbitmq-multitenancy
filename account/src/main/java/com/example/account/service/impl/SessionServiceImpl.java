@@ -13,9 +13,11 @@ import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @NoArgsConstructor
+@Slf4j
 public class SessionServiceImpl implements SessionService {	
 	private UserSessionRepository userSessionRepository;
 
@@ -72,7 +74,9 @@ public class SessionServiceImpl implements SessionService {
 
 	@Override
 	public void validateToken(String token) throws CustomException {
+		log.error(token);
 		if(!isTokenExists(token)){
+			log.error("finding in DB");
 			userSessionRepository.findById(token).orElseThrow(()-> new CustomException(APIStatus.BAD_REQUEST, "Invalid token"));
 		}
 	}

@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@DependsOn("rabbitMQConfig")
+//@DependsOn("rabbitMQConfig")
 @Component
 public class RabbitMQUtils {
 	private RabbitTemplate rabbitTemplate;

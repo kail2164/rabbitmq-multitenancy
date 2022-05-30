@@ -10,7 +10,6 @@ import com.example.product.service.SchemaService;
 import lombok.NoArgsConstructor;
 
 @Component
-@DependsOn("rabbitMQConfig")
 public class SchemaConsumer {
 	private SchemaService schemaService;
 

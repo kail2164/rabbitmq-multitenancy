@@ -38,7 +38,6 @@ import lombok.NoArgsConstructor;
 @RestController
 @RequestMapping("/api/product")
 @Tag(name = "Product Controller", description = "Controller for actions related to product")
-@NoArgsConstructor
 public class ProductController implements SecuredController {
 	private ProductService productService;
 

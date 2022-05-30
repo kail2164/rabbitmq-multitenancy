@@ -1,4 +1,4 @@
-package com.example.account.config.encoder;
+package com.example.common.config.encoder;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;

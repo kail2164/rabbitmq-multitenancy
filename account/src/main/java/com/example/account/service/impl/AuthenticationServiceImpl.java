@@ -2,6 +2,7 @@ package com.example.account.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -29,6 +30,7 @@ import com.example.account.service.AuthenticationService;
 import com.example.account.service.SessionService;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
+import com.example.common.dto.UserDTO;
 import com.example.common.dto.request.LoginRequest;
 import com.example.common.dto.request.RegisterRequest;
 import com.example.common.dto.response.LoginResponse;
@@ -123,6 +125,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		// Delete old token if exist
 		sessionService.removeOldTokens(session);
 		sessionService.setSession(token, session); // Save session into RAM
+	}
+
+	@Override
+	public UserDTO authenticate(String username) throws CustomException {
+		UserDetails user = loadUserByUsername(username);
+		UserDTO dto = new UserDTO();
+		dto.setRole(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().get());
+		dto.setPassword(user.getPassword());
+		dto.setUsername(user.getUsername());
+		return dto;
 	}
 
 }

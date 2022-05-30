@@ -1,39 +1,58 @@
 package com.example.product.controller;
 
-import static org.hamcrest.Matchers.hasLength;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.common.constants.TestConstants;
 import com.example.common.dto.response.ProductResponse;
+import com.example.common.util.JwtUtils;
 import com.example.product.service.ProductService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 class ProductControllerTest {
 	@Autowired
 	private MockMvc mvc;
 
 	@MockBean
 	private ProductService productService;
-	
+
+	private String token = "";
+
+	@BeforeAll
+	void setup() throws Exception {
+		token = "eyJhbGciOiJIUzUxMiJ9.eyJhY2NvdW50SWQiOjgsInN1YiI6InRlc3QiLCJleHAiOjE2NTM5Mjg0MzEsImlhdCI6MTY1Mzg4NTIzMX0.ueAM50wNoZy8Bekl5xusg0umP0DH9yEVorEXuWX-SQtl-ZPdSIhKHYV1GYsB-UsykbbXzT_c3KrGQNnyjk0GXA";
+	}
 //	@Test
 //	@WithMockUser(authorities = { "ROLE_ADMIN" })
 //	void testGetProduct_FAIL_NoParam() throws Exception {		
@@ -52,7 +71,7 @@ class ProductControllerTest {
 //	}	
 
 	@Test
-	@WithMockUser(authorities = { "ROLE_ADMIN" })
+	@WithMockUser(username = "test", authorities = { "ROLE_ADMIN" })
 	void testGetProduct_SUCCESS() throws Exception {
 		List<ProductResponse> listProducts = new ArrayList<>();
 		ProductResponse response = new ProductResponse();
@@ -69,17 +88,12 @@ class ProductControllerTest {
 		listProducts.add(response);
 		doReturn(listProducts).when(productService).getProducts(anyInt(), anyInt());
 		String uri = "/api/product/";
-		mvc.perform(
-				get(uri)
-				.param("page", "1")
-				.param("maxRecords", "5"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.result.length()", is(2)))
+		mvc.perform(get(uri).param("page", "1").param("maxRecords", "5").header("Authorization", "Bearer " + token))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.result.length()", is(2)))
 				.andExpect(jsonPath("$.result[0].id", is(1)))
 				.andExpect(jsonPath("$.result[0].imgUrl", is(TestConstants.PASSED)))
 				.andExpect(jsonPath("$.result[0].name", is(TestConstants.PASSED)))
-				.andExpect(jsonPath("$.result[0].price", is(10d)))
-				.andExpect(jsonPath("$.success", is(true)))
+				.andExpect(jsonPath("$.result[0].price", is(10d))).andExpect(jsonPath("$.success", is(true)))
 				.andExpect(jsonPath("$.error", Matchers.nullValue()));
 	}
 

@@ -1,14 +1,32 @@
 package com.example.common.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.example.common.constants.RabbitMQConstants;
+import com.example.common.dto.CustomException;
+import com.example.common.dto.UserDTO;
+import com.example.common.util.RabbitMQUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -23,17 +41,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private JwtRequestFilter jwtRequestFilter;
+	private CustomAuthenticationProvider customAuthenticationProvider;
+	private RabbitMQUtils rabbitMQUtils;
 
-	public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-			JwtRequestFilter jwtRequestFilter) {
+	public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtRequestFilter jwtRequestFilter,
+			CustomAuthenticationProvider customAuthenticationProvider, RabbitMQUtils rabbitMQUtils) {
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
 		this.jwtRequestFilter = jwtRequestFilter;
+		this.customAuthenticationProvider = customAuthenticationProvider;
+		this.rabbitMQUtils = rabbitMQUtils;
 	}
 
-	@Bean
+	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return authenticationManager();
+		return super.authenticationManagerBean();
+	}
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder) throws Exception {
+		AuthenticationService authenServicePrivate = new AuthenticationService();
+		auth.userDetailsService(authenServicePrivate).passwordEncoder(passwordEncoder);
+		auth.authenticationProvider(customAuthenticationProvider);
 	}
 
 	@Override
@@ -53,5 +82,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		// Add a filter to validate the tokens with every request
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	}
+
+	private class AuthenticationService implements UserDetailsService {
+		@Override
+		public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+			User userDetails;
+			try {
+				UserDTO userDTO = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+						RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDTO.class);
+				List<GrantedAuthority> authorities = new ArrayList<>();
+				authorities.add(new SimpleGrantedAuthority(userDTO.getRole()));
+				userDetails = new User(userDTO.getUsername(), userDTO.getPassword(), authorities);
+			} catch (CustomException e) {
+				e.printStackTrace();
+				throw new UsernameNotFoundException("Username not found");
+			}
+			return userDetails;
+		}
 	}
 }

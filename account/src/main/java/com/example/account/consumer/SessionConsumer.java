@@ -10,13 +10,11 @@ import com.example.account.service.SessionService;
 
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Component
 public class SessionConsumer {
 	private SessionService sessionService;
 	private AuthenticationService authenticationService;
 	
-	@Autowired
 	public SessionConsumer(
 			SessionService sessionService,
 			AuthenticationService authenticationService) {
@@ -39,6 +37,6 @@ public class SessionConsumer {
 	
 	@RabbitListener(queues = "#{queueGetUserDetails.name}", returnExceptions = "true")
 	public RemoteInvocationResult getUserDetails(String username) throws Exception {	
-		return new RemoteInvocationResult(authenticationService.loadUserByUsername(username));
+		return new RemoteInvocationResult(authenticationService.authenticate(username));
 	}
 }

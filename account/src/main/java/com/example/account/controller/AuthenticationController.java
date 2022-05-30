@@ -37,11 +37,9 @@ import lombok.NoArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @Tag(name = "Authentication Controller", description = "Controller for actions related to authentication")
-@NoArgsConstructor
 public class AuthenticationController {
 	private AuthenticationService authenticationService;
 
-	@Autowired
 	public AuthenticationController(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 	}

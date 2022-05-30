@@ -32,11 +32,9 @@ import com.example.common.constants.TestConstants;
 import com.example.product.publisher.AccountPublisher;
 import com.example.product.service.SchemaService;
 
-@SpringBootTest(classes = { SchemaServiceImpl.class })
-@Import(SchemaServiceTestContextConfiguration.class)
+@SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ActiveProfiles("default")
 class SchemaServiceImplTest {
 	@Mock
 	private DataSource dataSource;
@@ -54,16 +52,17 @@ class SchemaServiceImplTest {
 	private SchemaService schemaService = new SchemaServiceImpl();
 	@Mock
 	Connection connection;	
+
 	@BeforeAll
 	void setup() throws Exception {
 		doReturn("jdbc:postgresql://localhost:5432/db_product").when(env).getProperty("spring.datasource.url");
 		doReturn("ad").when(env).getProperty("spring.datasource.username");
 		doReturn("12345678!Ad").when(env).getProperty("spring.datasource.password");
-		doReturn(connection).when(dataSource).getConnection();	
+		doReturn(connection).when(dataSource).getConnection();
 		List<String> listSchemas = new ArrayList<>();
 		listSchemas.add(TestConstants.PASSED);
-		doReturn(listSchemas).when(accountPublisher).fetchAllSchemas();			
-}
+		doReturn(listSchemas).when(accountPublisher).fetchAllSchemas();
+	}
 	
 	@Test
 	@Order(1)

@@ -49,15 +49,14 @@ public class SchemaServiceImpl implements SchemaService {
 
 	@Autowired
 	public SchemaServiceImpl(DataSource dataSource, AccountPublisher accountPublisher,
-			org.springframework.core.env.Environment env, ExecutorService singleThreadExecutor,
-			SchemaExport schemaExport, SchemaUpdate schemaUpdate) {
+			org.springframework.core.env.Environment env, ExecutorService singleThreadExecutor) {
 		super();
 		this.dataSource = dataSource;
 		this.accountPublisher = accountPublisher;
 		this.env = env;
 		this.singleThreadExecutor = singleThreadExecutor;
-		this.schemaExport = schemaExport;
-		this.schemaUpdate = schemaUpdate;
+		this.schemaExport = new SchemaExport();
+		this.schemaUpdate = new SchemaUpdate();
 		try {
 			this.connection = dataSource.getConnection();
 		} catch (SQLException e) {
