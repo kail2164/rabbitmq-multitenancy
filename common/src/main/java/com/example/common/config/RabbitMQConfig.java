@@ -10,12 +10,15 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 
 @Configuration
 public class RabbitMQConfig {
@@ -38,15 +41,13 @@ public class RabbitMQConfig {
 
 	@Bean
 	public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.setVisibility(PropertyAccessor.ALL, Visibility.ANY);
-		objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		// This item must be configured, otherwise it will report
-		// java.lang.ClassCastException: java.util.LinkedHashMap cannot be cast to XXX
-		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, As.PROPERTY);
-		objectMapper.setSerializationInclusion(Include.NON_NULL);
+		ObjectMapper objectMapper = JsonMapper.builder()
+				.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, DefaultTyping.NON_FINAL,
+						JsonTypeInfo.As.PROPERTY)
+				.visibility(PropertyAccessor.ALL, Visibility.ANY).enable(MapperFeature.USE_ANNOTATIONS)
+				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false).serializationInclusion(Include.NON_NULL)
+				.build();
 		return new Jackson2JsonMessageConverter(objectMapper);
 	}
 }

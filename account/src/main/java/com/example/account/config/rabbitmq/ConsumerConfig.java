@@ -18,6 +18,10 @@ public class ConsumerConfig {
 	@Bean
 	public Queue queueLogout() {
 		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_LOGOUT);
+	}	
+	@Bean
+	public Queue queueLogin() {
+		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_LOGIN);
 	}
 	@Bean
 	public Queue queueValidateToken() {
@@ -30,10 +34,14 @@ public class ConsumerConfig {
 	@Bean
 	public Queue queueGetUserDetails() {
 		return new Queue(RabbitMQConstants.QUEUE_ACCOUNT_GET_USER_DETAILS);
-	}
+	}	
 	@Bean 
 	public Binding bindingLogout() {
 		return BindingBuilder.bind(queueLogout()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_LOGOUT);
+	}
+	@Bean 
+	public Binding bindingLogin() {
+		return BindingBuilder.bind(queueLogin()).to(topic()).with(RabbitMQConstants.ROUTING_ACCOUNT_LOGIN);
 	}
 	@Bean 
 	public Binding bindingValidateToken() {

@@ -4,27 +4,26 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.remoting.support.RemoteInvocationResult;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.example.account.service.AuthenticationService;
 import com.example.account.service.SessionService;
 import com.example.common.constants.TestConstants;
 import com.example.common.dto.CustomException;
+import com.example.common.dto.UserDTO;
+import com.example.common.dto.request.LoginRequest;
+import com.example.common.dto.response.LoginResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SessionConsumerTest {
@@ -48,6 +47,15 @@ class SessionConsumerTest {
 		Boolean bool = (Boolean) result.getValue();
 		assertTrue(bool);
 	}
+	@Test
+	void testLogin_SUCCESS() throws CustomException {
+		LoginResponse response = new LoginResponse();
+		doReturn(response).when(authenticationService).login(any(LoginRequest.class));
+		RemoteInvocationResult result = assertDoesNotThrow(() -> sessionConsumer.login(new LoginRequest()));
+		assertNotNull(result);
+		LoginResponse bool = (LoginResponse) result.getValue();
+		assertNotNull(bool);
+	}
 
 	@Test
 	void testLogout_SUCCESS() {
@@ -58,18 +66,18 @@ class SessionConsumerTest {
 	}
 	
 	@Test
-	void testGetUserDetails_FAIL_SessionServiceThrewException() {
-		doThrow(UsernameNotFoundException.class).when(authenticationService).loadUserByUsername(anyString());
+	void testGetUserDetails_FAIL_SessionServiceThrewException() throws CustomException {
+		doThrow(UsernameNotFoundException.class).when(authenticationService).authenticate(anyString());
 		assertThrows(UsernameNotFoundException.class, () -> sessionConsumer.getUserDetails(TestConstants.PASSED));
 	}
 
 	@Test
-	void testGetUserDetails_SUCCESS() {
-		UserDetails returnedUser = new User(TestConstants.PASSED, TestConstants.PASSED, new ArrayList<>());
-		doReturn(returnedUser).when(authenticationService).loadUserByUsername(anyString());
+	void testGetUserDetails_SUCCESS() throws CustomException {
+		UserDTO returnedUser = new UserDTO(TestConstants.PASSED, TestConstants.PASSED, TestConstants.PASSED);
+		doReturn(returnedUser).when(authenticationService).authenticate(anyString());
 		RemoteInvocationResult result = assertDoesNotThrow(() -> sessionConsumer.getUserDetails(TestConstants.PASSED));
 		assertNotNull(result);
-		UserDetails details = (UserDetails) result.getValue();
+		UserDTO details = (UserDTO) result.getValue();
 		assertNotNull(details);
 	}	
 

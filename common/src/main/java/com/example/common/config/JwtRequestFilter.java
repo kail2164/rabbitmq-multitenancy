@@ -1,6 +1,7 @@
 package com.example.common.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -29,13 +33,13 @@ import com.example.common.constants.GlobalConstants;
 import com.example.common.constants.RabbitMQConstants;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
+import com.example.common.dto.UserDTO;
 import com.example.common.util.JwtUtils;
 import com.example.common.util.RabbitMQUtils;
 import com.example.common.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.NoArgsConstructor;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -73,12 +77,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// Once we get the token validate it.
 			boolean authenticationIsNull = SecurityContextHolder.getContext().getAuthentication() == null;
 			if (username != null && authenticationIsNull) {
-				UserDetails userDetails = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
-						RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDetails.class);
+				UserDTO userDTO = rabbitMQUtils.sendAndReceive(RabbitMQConstants.TOPIC_ACCOUNT,
+						RabbitMQConstants.ROUTING_ACCOUNT_GET_USER_DETAILS, username, UserDTO.class);
+				List<GrantedAuthority> authorities = new ArrayList<>();
+				authorities.add(new SimpleGrantedAuthority(userDTO.getRole()));
+				User user = new User(userDTO.getUsername(), userDTO.getPassword(), authorities);
 				// if token is valid configure Spring Security to manually set
 				// authentication
-				if (JwtUtils.validateToken(jwtToken, userDetails)) {
-					setAuthentication(userDetails, request);
+				if (JwtUtils.validateToken(jwtToken, user)) {
+					setAuthentication(user, request);
 				}
 			}
 			ModifiedRequest modifiedRequest = populateRequestWithHeaders(request, jwtToken);

@@ -2,7 +2,7 @@ package com.example.common.dto;
 
 import java.io.Serializable;
 
-public class BaseDTO implements Serializable {
+public abstract class BaseDTO implements Serializable {
 
 	/**
 	 * 

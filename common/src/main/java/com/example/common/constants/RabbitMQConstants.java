@@ -19,6 +19,7 @@ public interface RabbitMQConstants {
 	String BY = "by";
 	String DETAILS = "details";
 	String LOGOUT = "logout";
+	String LOGIN = "login";
 	String TOKEN = "token";
 	String USER = "user";
 	String VALIDATE = "validate";
@@ -29,16 +30,19 @@ public interface RabbitMQConstants {
 	
 	String QUEUE_ACCOUNT_GET_ALL_SCHEMAS = StringUtils.getQueueName(ACCOUNT, GET, ALL, SCHEMAS);
 	String QUEUE_ACCOUNT_LOGOUT = StringUtils.getQueueName(ACCOUNT, LOGOUT);
+	String QUEUE_ACCOUNT_LOGIN = StringUtils.getQueueName(ACCOUNT, LOGIN);
 	String QUEUE_ACCOUNT_VALIDATE_TOKEN = StringUtils.getQueueName(ACCOUNT, VALIDATE, TOKEN);
 	String QUEUE_ACCOUNT_GET_USER_DETAILS = StringUtils.getQueueName(ACCOUNT, GET, USER, DETAILS);
 
 	String ACTION_ACCOUNT_GET_ALL_SCHEMAS = StringUtils.getAction(ACCOUNT, GET, ALL, SCHEMAS);
 	String ACTION_ACCOUNT_LOGOUT = StringUtils.getAction(ACCOUNT, LOGOUT);
+	String ACTION_ACCOUNT_LOGIN = StringUtils.getAction(ACCOUNT, LOGIN);
 	String ACTION_ACCOUNT_VALIDATE_TOKEN = StringUtils.getAction(ACCOUNT, VALIDATE, TOKEN);
 	String ACTION_ACCOUNT_GET_USER_DETAILS = StringUtils.getAction(ACCOUNT, GET, USER, DETAILS);
 
 	String ROUTING_ACCOUNT_GET_ALL_SCHEMAS = StringUtils.getRoutingKey(ACCOUNT, ACTION_ACCOUNT_GET_ALL_SCHEMAS, ZERO_OR_MORE);
 	String ROUTING_ACCOUNT_LOGOUT = StringUtils.getRoutingKey(ACCOUNT, ACTION_ACCOUNT_LOGOUT, ZERO_OR_MORE);
+	String ROUTING_ACCOUNT_LOGIN = StringUtils.getRoutingKey(ACCOUNT, ACTION_ACCOUNT_LOGIN, ZERO_OR_MORE);
 	String ROUTING_ACCOUNT_VALIDATE_TOKEN = StringUtils.getRoutingKey(ACCOUNT, ACTION_ACCOUNT_VALIDATE_TOKEN, ZERO_OR_MORE);
 	String ROUTING_ACCOUNT_GET_USER_DETAILS = StringUtils.getRoutingKey(ACCOUNT, ACTION_ACCOUNT_GET_USER_DETAILS, ZERO_OR_MORE);
 

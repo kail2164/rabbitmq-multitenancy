@@ -156,22 +156,6 @@ class AuthenticationServiceImplTest {
 		String actualMessage = ex.getMessage();
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
-	
-	@Test
-	void testLogin_FAIL_InvalidSession() {
-		Account returnedAccount = new Account();
-		returnedAccount.setRole(TestConstants.PASSED);
-		returnedAccount.setUsername(TestConstants.PASSED);
-		returnedAccount.setPassword(TestConstants.PASSED);
-		doReturn(Optional.of(returnedAccount)).when(accountRepository).findByUsernameIgnoreCase(any(String.class));
-		LoginRequest request = new LoginRequest();
-		request.setUsername(TestConstants.PASSED);
-		request.setPassword(TestConstants.PASSED);
-		Exception ex = assertThrows(CustomException.class, () -> authenticationService.login(request));
-		String expectedMessage = "Invalid session";
-		String actualMessage = ex.getMessage();
-		assertTrue(actualMessage.contains(expectedMessage));
-	}
 
 	@Test
 	void testRegister_FAIL_CreateMethodThrowsException() throws CustomException {
