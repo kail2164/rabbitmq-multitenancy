@@ -122,7 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public void logout(String token) throws CustomException {
-		sessionService.removeToken(token);
+		sessionService.removeTokens(List.of(token));
 	}
 
 	private void setSession(String token, Account acc) throws CustomException {

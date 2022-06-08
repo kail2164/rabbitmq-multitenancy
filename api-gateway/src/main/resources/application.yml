@@ -1,0 +1,9 @@
+jwt:
+  secret: 12345678@Ab!
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: local
+gateway:
+  host: http://localhost

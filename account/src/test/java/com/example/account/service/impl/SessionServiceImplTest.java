@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -91,7 +92,7 @@ class SessionServiceImplTest {
 	
 	@Test
 	void testRemoveToken_FAIL_NullSession() {
-		Exception ex = assertThrows(CustomException.class, () -> sessionService.removeToken(null));
+		Exception ex = assertThrows(CustomException.class, () -> sessionService.removeTokens(null));
 		String expectedMessage = "cannot be null";
 		String actualMessage = ex.getMessage();
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -101,12 +102,12 @@ class SessionServiceImplTest {
 	void testRemoveToken_SUCCESS_FoundSession() {
 		UserSession session = new UserSession();
 		doReturn(Optional.of(session)).when(userSessionRepository).findById(anyString());
-		assertDoesNotThrow(() -> sessionService.removeToken(TestConstants.PASSED));
+		assertDoesNotThrow(() -> sessionService.removeTokens(List.of(TestConstants.PASSED)));
 	}
 	
 	@Test
 	void testRemoveToken_SUCCESS_NotFoundSession() {
-		assertDoesNotThrow(() -> sessionService.removeToken(TestConstants.PASSED));
+		assertDoesNotThrow(() -> sessionService.removeTokens(List.of(TestConstants.PASSED)));
 	}
 	
 	@Test

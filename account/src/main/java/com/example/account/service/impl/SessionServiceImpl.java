@@ -1,6 +1,8 @@
 package com.example.account.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import com.example.account.repository.UserSessionRepository;
 import com.example.account.service.SessionService;
 import com.example.common.dto.APIStatus;
 import com.example.common.dto.CustomException;
+import com.example.common.util.JwtUtils;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,18 +56,20 @@ public class SessionServiceImpl implements SessionService {
 		}
 		for(Entry<String, UserSession> entry : cacheHashMap.entrySet()) {
 			if(session.equals(entry.getValue())) {
-				removeToken(entry.getKey());
+				removeTokens(List.of(entry.getKey()));
 			}
 		}		
 	}
 	
 	@Override
-	public void removeToken(String token) throws CustomException{
-		if(token == null) {
-			throw new CustomException(APIStatus.BAD_REQUEST, "Token cannot be null");
+	public void removeTokens(List<String> tokens) throws CustomException{
+		if(tokens == null) {
+			throw new CustomException(APIStatus.BAD_REQUEST, "Tokens cannot be null");
 		}
-		cacheHashMap.remove(token);
-		deleteOldToken(token);
+		for(String token : tokens) {
+			cacheHashMap.remove(token);
+		}
+		deleteOldTokens(tokens);
 	}
 
 	@Override
@@ -80,8 +85,21 @@ public class SessionServiceImpl implements SessionService {
 			userSessionRepository.findById(token).orElseThrow(()-> new CustomException(APIStatus.BAD_REQUEST, "Invalid token"));
 		}
 	}
-	private void deleteOldToken(String token) {
-		userSessionRepository.findById(token).ifPresent(session -> userSessionRepository.deleteById(token));		
+	private void deleteOldTokens(List<String> tokens) {
+		userSessionRepository.deleteAllById(tokens);
+	}
+
+
+	@Override
+	public void checkForExpiredToken() throws CustomException {
+		List<String> expiredTokens = new ArrayList<>();
+		for(Entry<String, UserSession> entry : cacheHashMap.entrySet()) {
+			String token = entry.getKey();
+			if(JwtUtils.isTokenExpired(token)) {
+				expiredTokens.add(token);
+			}
+		}
+		removeTokens(expiredTokens);
 	}
 
 	

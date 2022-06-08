@@ -15,6 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Entity(name = "tbl_user_session")
+@Getter
 public class UserSession extends BaseEntity {
 	
 	@Id
