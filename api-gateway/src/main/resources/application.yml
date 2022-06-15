@@ -7,3 +7,10 @@ spring:
     active: local
 gateway:
   host: http://localhost
+--- 
+spring:
+  config:
+    activate:
+      on-profile: dev
+gateway:
+  host: http://host.docker.internal

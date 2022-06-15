@@ -29,3 +29,10 @@ spring:
 springdoc:
    swagger-ui:
       path: /api/docs/swagger-ui.html
+---
+spring:
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/db_account
+  config:
+    activate:
+      on-profile: dev

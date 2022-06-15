@@ -100,8 +100,6 @@ class SessionServiceImplTest {
 
 	@Test
 	void testRemoveToken_SUCCESS_FoundSession() {
-		UserSession session = new UserSession();
-		doReturn(Optional.of(session)).when(userSessionRepository).findById(anyString());
 		assertDoesNotThrow(() -> sessionService.removeTokens(List.of(TestConstants.PASSED)));
 	}
 	
