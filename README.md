@@ -17,6 +17,7 @@ In this example, we will have these maven projects:
 3. **account**: This is where we will manage the accounts in our application, it will also handle the authentication as well as authorization. 
 
 4. **product**: This is the multi-tenancy project that manages the products.
+4. **api-gateway**: This is API Gateway service to route the request to their correct handler
 
 ## How it works
 
